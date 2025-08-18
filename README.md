@@ -13,7 +13,7 @@ Install via:
 
 - .NET CLI: `> dotnet add package sharpconfig`
 - Package Manager: `> NuGet\Install-Package sharpconfig`
-- [Download latest]()
+- [Download latest](https://github.com/cdervis/SharpConfig/archive/refs/tags/v3.2.9.1.zip)
 
 ---
 
