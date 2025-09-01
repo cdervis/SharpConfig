@@ -1,21 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <Description>An easy to use CFG/INI configuration library for .NET.</Description>
-    <Copyright>Copyright 2013-2022 Cemalettin Dervis</Copyright>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>An easy to use cfg/ini configuration library for .NET.</Description>
+    <Copyright>Copyright 2013-2025 Cemalettin Dervis</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <AssemblyVersion>3.3</AssemblyVersion>
-    <FileVersion>3.3</FileVersion>
-    <PackageIcon>SharpConfigLogo.png</PackageIcon>
-    <PackageLicenseFile></PackageLicenseFile>
-    <Version>3.3</Version>
+    <AssemblyVersion>4.0</AssemblyVersion>
+    <FileVersion>4.0</FileVersion>
+    <PackageIcon>logo256.png</PackageIcon>
+    <Version>4.0</Version>
     <Authors>Cemalettin Dervis</Authors>
     <PackageProjectUrl>https://github.com/cemdervis/SharpConfig</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/cemdervis/SharpConfig.git</RepositoryUrl>
+    <RepositoryUrl>https://github.com/cdervis/SharpConfig</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>sharpconfig config c# csharp cfg ini configuration library</PackageTags>
+    <PackageTags>sharpconfig config c# csharp cfg ini configuration library settings</PackageTags>
     <PackageReleaseNotes>Please see the project URL for the latest release notes.</PackageReleaseNotes>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -44,13 +43,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\Docs\assets\images\logo256.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+      <Link>logo256.png</Link>
+    </None>
     <None Include="..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
-    </None>
-    <None Include="..\SharpConfigLogo.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
     </None>
   </ItemGroup>
 

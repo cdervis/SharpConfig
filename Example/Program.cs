@@ -29,12 +29,12 @@ internal static class Program
   {
     // Call the methods in this file here to see their effect.
 
-    //HowToLoadAConfig();
-    //HowToCreateAConfig();
-    //HowToSaveAConfig(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "TestCfg.ini"));
-    //HowToCreateObjectsFromSections();
-    //HowToCreateSectionsFromObjects();
-    //HowToHandleArrays();
+    // HowToLoadAConfig();
+    // HowToCreateAConfig();
+    // HowToSaveAConfig(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "TestCfg.ini"));
+    // HowToCreateObjectsFromSections();
+    // HowToCreateSectionsFromObjects();
+    // HowToHandleArrays();
 
     Console.ReadLine();
   }
