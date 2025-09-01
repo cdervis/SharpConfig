@@ -1,6 +1,6 @@
 # License
 
-SharpConfig is licensed under the [MIT license](https://choosealicense.com/licenses/mit/) :octicons-link-external-16:.
+SharpConfig is licensed under the [MIT license](https://choosealicense.com/licenses/mit/).
 
 ---
 

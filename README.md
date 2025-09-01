@@ -1,6 +1,6 @@
 # SharpConfig
 
-![logo](Docs/img/logo.png)
+![logo](Docs/assets/images/logo256.webp)
 
 SharpConfig is an easy to use cfg/ini configuration library for .NET.
 
