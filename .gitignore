@@ -1,1 +1,6 @@
 site/
+bin/
+obj/
+.DS_Store
+.idea/
+*.user
