@@ -8,6 +8,7 @@
 
 You can use SharpConfig to read, modify and save configuration files and streams, in either text or binary format.
 
+[![Homepage](https://img.shields.io/badge/Homepage-blue)](https://dervis.de/sharpconfig)
 [![NuGet Version](https://img.shields.io/nuget/v/sharpconfig)](https://www.nuget.org/packages/sharpconfig) 
 [![NuGet Downloads](https://img.shields.io/nuget/dt/sharpconfig)](https://www.nuget.org/packages/sharpconfig)
 
