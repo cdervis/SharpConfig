@@ -72,8 +72,8 @@ namespace SharpConfig
     /// </summary>
     public string StringValue
     {
-      get => GetValue<string>().Trim('\"');
-      set => SetValue(value.Trim('\"'));
+      get => Configuration.OutputRawStringValues ? GetValue<string>() : GetValue<string>().Trim('\"');
+      set => SetValue(Configuration.OutputRawStringValues ? value : value.Trim('\"'));
     }
 
     /// <summary>
