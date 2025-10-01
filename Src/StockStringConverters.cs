@@ -324,10 +324,10 @@ namespace SharpConfig
   internal sealed class StringStringConverter : TypeStringConverter<string>
   {
     public override string ConvertToString(object value)
-      => value.ToString().Trim('\"');
+      => Configuration.OutputRawStringValues ? value.ToString() : value.ToString().Trim('\"');
 
     public override object TryConvertFromString(string value, Type hint)
-      => value.Trim('\"');
+      => Configuration.OutputRawStringValues ? value : value.Trim('\"');
   }
 
   internal sealed class UInt16StringConverter : TypeStringConverter<ushort>
