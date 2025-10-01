@@ -26,6 +26,7 @@ namespace SharpConfig
     {
       var currentSection = new Section(Section.DefaultSectionName);
       var preCommentBuilder = new StringBuilder();
+      HashSet<char> validCommentChars = new HashSet<char>(Configuration.ValidCommentChars); // Initialize once for ecah file to optimize performance
 
       int lineNumber = 0;
 
@@ -45,7 +46,7 @@ namespace SharpConfig
           continue;
         }
 
-        var comment = ParseComment(line, out int commentIndex);
+        var comment = ParseComment(line, validCommentChars, out int commentIndex);
 
         if (commentIndex == 0)
         {
@@ -109,7 +110,7 @@ namespace SharpConfig
       }
     }
 
-    private static string ParseComment(string line, out int commentCharIndex)
+    private static string ParseComment(string line, HashSet<char> validCommentChars, out int commentCharIndex)
     {
       // A comment starts with a valid comment character that:
       // 1. is not within a quote (eg. "this is # not a comment"), and
@@ -124,7 +125,6 @@ namespace SharpConfig
       int index = 0;
       int quoteCount = 0;
       int length = line.Length;
-      HashSet<char> validCommentChars = new HashSet<char>(Configuration.ValidCommentChars); // Use HashSet<char> for O(1) lookup instead of Array.IndexOf for O(n)
       while (index < length) // traverse line from left to right
       {
         char currentChar = line[index];
