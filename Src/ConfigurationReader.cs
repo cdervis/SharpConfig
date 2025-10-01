@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Collections.Generic;
 
 namespace SharpConfig
 {
@@ -122,11 +123,14 @@ namespace SharpConfig
 
       int index = 0;
       int quoteCount = 0;
-      while (line.Length > index) // traverse line from left to right
+      int length = line.Length;
+      HashSet<char> validCommentChars = new HashSet<char>(Configuration.ValidCommentChars); // Use HashSet<char> for O(1) lookup instead of Array.IndexOf for O(n)
+      while (index < length) // traverse line from left to right
       {
-        bool isValidCommentChar = Array.IndexOf(Configuration.ValidCommentChars, line[index]) > -1;
-        bool isQuotationMark = line[index] == '\"';
-        bool isCharWithinQuotes = quoteCount % 2 == 1;
+        char currentChar = line[index];
+        bool isValidCommentChar = validCommentChars.Contains(currentChar);
+        bool isQuotationMark = currentChar == '\"';
+        bool isCharWithinQuotes = (quoteCount & 1) == 1; // bitwise AND is slightly faster
         bool isCharEscaped = index > 0 && line[index - 1] == '\\';
 
         if (isValidCommentChar && !isCharWithinQuotes && !isCharEscaped)
