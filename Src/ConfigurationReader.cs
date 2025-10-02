@@ -26,7 +26,7 @@ namespace SharpConfig
     {
       var currentSection = new Section(Section.DefaultSectionName);
       var preCommentBuilder = new StringBuilder();
-      HashSet<char> validCommentChars = new HashSet<char>(Configuration.ValidCommentChars); // Initialize once for ecah file to optimize performance
+      HashSet<char> validCommentChars = new HashSet<char>(Configuration.ValidCommentChars); // Initialize once for each reader to optimize performance
 
       int lineNumber = 0;
 
