@@ -45,8 +45,8 @@ namespace SharpConfig
     {
       string stringExpr = GetStringExpression();
 
-      if (Comment != null && PreComment != null &&
-        !Configuration.IgnoreInlineComments && !Configuration.IgnorePreComments)
+      if (Comment != null && PreComment != null && !Configuration.IgnoreInlineComments &&
+          !Configuration.IgnorePreComments)
       {
         // Include inline comment and pre-comments.
         return $"{GetFormattedPreComment()}{Environment.NewLine}{stringExpr} {GetFormattedComment()}";
@@ -87,15 +87,10 @@ namespace SharpConfig
     // to be written to a config file.
     private string GetFormattedPreComment()
     {
-      string[] lines = PreComment.Split(
-          new[] { "\r\n", "\n" },
-          StringSplitOptions.None
-          );
+      string[] lines = PreComment.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 
       return string.Join(
-          Environment.NewLine,
-          Array.ConvertAll(lines, s => Configuration.PreferredCommentChar + " " + s)
-          );
+          Environment.NewLine, Array.ConvertAll(lines, s => Configuration.PreferredCommentChar + " " + s));
     }
 
     /// <summary>

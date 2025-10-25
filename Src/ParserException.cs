@@ -12,8 +12,7 @@ namespace SharpConfig
   [Serializable]
   public sealed class ParserException : Exception
   {
-    internal ParserException(string message, int line)
-        : base($"Line {line}: {message}")
+    internal ParserException(string message, int line) : base($"Line {line}: {message}")
     {
       Line = line;
     }

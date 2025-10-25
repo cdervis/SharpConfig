@@ -26,8 +26,7 @@ namespace SharpConfig
     /// </summary>
     ///
     /// <param name="name">The name of the section.</param>
-    public Section(string name)
-        : base(name)
+    public Section(string name) : base(name)
     {
       _settings = new List<Setting>();
     }
@@ -45,7 +44,7 @@ namespace SharpConfig
     /// <param name="name">The name of the section.</param>
     /// <param name="obj"></param>
     /// <returns>The newly created section.</returns>
-    /// 
+    ///
     /// <exception cref="ArgumentException">When <paramref name="name"/> is null or empty.</exception>
     /// <exception cref="ArgumentNullException">When <paramref name="obj"/> is null.</exception>
     public static Section FromObject(string name, object obj)
@@ -97,19 +96,20 @@ namespace SharpConfig
     /// Properties and fields that are marked with the <see cref="IgnoreAttribute"/> attribute
     /// or are of a type that is marked with that attribute, are ignored.
     /// </summary>
-    /// 
+    ///
     /// <typeparam name="T">
     /// The type of object to create.
     /// Note: the type must be default-constructible, meaning it has a public default constructor.
     /// </typeparam>
-    /// 
+    ///
     /// <returns>The created object.</returns>
-    /// 
+    ///
     /// <remarks>
     /// The specified type must have a public default constructor
     /// in order to be created.
     /// </remarks>
-    public T ToObject<T>() where T : new()
+    public T ToObject<T>()
+        where T : new()
     {
       var obj = Activator.CreateInstance<T>();
       SetValuesTo(obj);
@@ -122,19 +122,19 @@ namespace SharpConfig
     /// Properties and fields that are marked with the <see cref="IgnoreAttribute"/> attribute
     /// or are of a type that is marked with that attribute, are ignored.
     /// </summary>
-    /// 
+    ///
     /// <param name="type">
     /// The type of object to create.
     /// Note: the type must be default-constructible, meaning it has a public default constructor.
     /// </param>
-    /// 
+    ///
     /// <returns>The created object.</returns>
-    /// 
+    ///
     /// <remarks>
     /// The specified type must have a public default constructor
     /// in order to be created.
     /// </remarks>
-    /// 
+    ///
     /// <exception cref="ArgumentNullException">When <paramref name="type"/> is null.</exception>
     public object ToObject(Type type)
     {
@@ -154,9 +154,9 @@ namespace SharpConfig
     /// Properties and fields that are marked with the <see cref="IgnoreAttribute"/> attribute
     /// or are of a type that is marked with that attribute, are ignored.
     /// </summary>
-    /// 
+    ///
     /// <param name="obj">The object from which the values are obtained.</param>
-    /// 
+    ///
     /// <exception cref="ArgumentNullException">When <paramref name="obj"/> is null.</exception>
     public void GetValuesFrom(object obj)
     {
@@ -218,9 +218,9 @@ namespace SharpConfig
     /// Properties and fields that are marked with the <see cref="IgnoreAttribute"/> attribute
     /// or are of a type that is marked with that attribute, are ignored.
     /// </summary>
-    /// 
+    ///
     /// <param name="obj">The object that is modified based on the section.</param>
-    /// 
+    ///
     /// <exception cref="ArgumentNullException">When <paramref name="obj"/> is null.</exception>
     public void SetValuesTo(object obj)
     {
@@ -245,9 +245,8 @@ namespace SharpConfig
           continue;
         }
 
-        object value = prop.PropertyType.IsArray ?
-          setting.GetValueArray(prop.PropertyType.GetElementType()) :
-          setting.GetValue(prop.PropertyType);
+        object value = prop.PropertyType.IsArray ? setting.GetValueArray(prop.PropertyType.GetElementType())
+                                                 : setting.GetValue(prop.PropertyType);
 
         if (prop.PropertyType.IsArray)
         {
@@ -287,9 +286,8 @@ namespace SharpConfig
           continue;
         }
 
-        object value = field.FieldType.IsArray ?
-          setting.GetValueArray(field.FieldType.GetElementType()) :
-          setting.GetValue(field.FieldType);
+        object value = field.FieldType.IsArray ? setting.GetValueArray(field.FieldType.GetElementType())
+                                               : setting.GetValue(field.FieldType);
 
         if (field.FieldType.IsArray)
         {
@@ -337,22 +335,21 @@ namespace SharpConfig
     /// <summary>
     /// Gets an enumerator that iterates through the section.
     /// </summary>
-    public IEnumerator<Setting> GetEnumerator()
-      => _settings.GetEnumerator();
+    public IEnumerator<Setting> GetEnumerator() => _settings.GetEnumerator();
 
     /// <summary>
     /// Gets an enumerator that iterates through the section.
     /// </summary>
-    IEnumerator IEnumerable.GetEnumerator()
-      => GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     /// <summary>
     /// Adds a setting to the section.
     /// </summary>
     /// <param name="setting">The setting to add.</param>
-    /// 
+    ///
     /// <exception cref="ArgumentNullException">When <paramref name="setting"/> is null.</exception>
-    /// <exception cref="ArgumentException">When the specified setting already exists in the section.</exception>
+    /// <exception cref="ArgumentException">When the specified setting already exists in the
+    /// section.</exception>
     public void Add(Setting setting)
     {
       if (setting == null)
@@ -373,9 +370,9 @@ namespace SharpConfig
     /// </summary>
     /// <param name="settingName">The name of the setting to add.</param>
     /// <returns>The added setting.</returns>
-    /// <exception cref="ArgumentNullException">When <paramref name="settingName"/> is null or empty.</exception>
-    public Setting Add(string settingName)
-      => Add(settingName, string.Empty);
+    /// <exception cref="ArgumentNullException">When <paramref name="settingName"/> is null or
+    /// empty.</exception>
+    public Setting Add(string settingName) => Add(settingName, string.Empty);
 
     /// <summary>
     /// Adds a setting with a specific name and value to the section.
@@ -383,7 +380,8 @@ namespace SharpConfig
     /// <param name="settingName">The name of the setting to add.</param>
     /// <param name="settingValue">The initial value of the setting to add.</param>
     /// <returns>The added setting.</returns>
-    /// <exception cref="ArgumentNullException">When <paramref name="settingName"/> is null or empty.</exception>
+    /// <exception cref="ArgumentNullException">When <paramref name="settingName"/> is null or
+    /// empty.</exception>
     public Setting Add(string settingName, object settingValue)
     {
       var setting = new Setting(settingName, settingValue);
@@ -398,8 +396,9 @@ namespace SharpConfig
     /// </summary>
     /// <param name="settingName">The case-sensitive name of the setting to remove.</param>
     /// <returns>True if a setting with the specified name was removed; false otherwise.</returns>
-    /// 
-    /// <exception cref="ArgumentNullException">When <paramref name="settingName"/> is null or empty.</exception>
+    ///
+    /// <exception cref="ArgumentNullException">When <paramref name="settingName"/> is null or
+    /// empty.</exception>
     public bool Remove(string settingName)
     {
       if (string.IsNullOrEmpty(settingName))
@@ -415,15 +414,15 @@ namespace SharpConfig
     /// </summary>
     /// <param name="setting">The setting to remove.</param>
     /// <returns>True if the setting was removed; false otherwise.</returns>
-    public bool Remove(Setting setting)
-      => _settings.Remove(setting);
+    public bool Remove(Setting setting) => _settings.Remove(setting);
 
     /// <summary>
     /// Removes all settings that have a specific name.
     /// </summary>
     /// <param name="settingName">The case-sensitive name of the settings to remove.</param>
-    /// 
-    /// <exception cref="ArgumentNullException">When <paramref name="settingName"/> is null or empty.</exception>
+    ///
+    /// <exception cref="ArgumentNullException">When <paramref name="settingName"/> is null or
+    /// empty.</exception>
     public void RemoveAllNamed(string settingName)
     {
       if (string.IsNullOrEmpty(settingName))
@@ -431,22 +430,21 @@ namespace SharpConfig
         throw new ArgumentNullException(nameof(settingName));
       }
 
-      while (Remove(settingName)) ;
+      while (Remove(settingName))
+        ;
     }
 
     /// <summary>
     /// Clears the section of all settings.
     /// </summary>
-    public void Clear()
-      => _settings.Clear();
+    public void Clear() => _settings.Clear();
 
     /// <summary>
     /// Determines whether a specified setting is contained in the section.
     /// </summary>
     /// <param name="setting">The setting to check for containment.</param>
     /// <returns>True if the setting is contained in the section; false otherwise.</returns>
-    public bool Contains(Setting setting)
-      => _settings.Contains(setting);
+    public bool Contains(Setting setting) => _settings.Contains(setting);
 
     /// <summary>
     /// Determines whether a specifically named setting is contained in the section.
@@ -454,7 +452,8 @@ namespace SharpConfig
     /// <param name="settingName">The case-sensitive name of the setting.</param>
     /// <returns>True if the setting is contained in the section; false otherwise.</returns>
     ///
-    /// <exception cref="ArgumentNullException">When <paramref name="settingName"/> is null or empty.</exception>
+    /// <exception cref="ArgumentNullException">When <paramref name="settingName"/> is null or
+    /// empty.</exception>
     public bool Contains(string settingName)
     {
       if (string.IsNullOrEmpty(settingName))
@@ -468,20 +467,20 @@ namespace SharpConfig
     /// <summary>
     /// Gets the number of settings that are in the section.
     /// </summary>
-    public int SettingCount
-      => _settings.Count;
+    public int SettingCount => _settings.Count;
 
     /// <summary>
     /// Gets or sets a setting by index.
     /// </summary>
     /// <param name="index">The index of the setting in the section.</param>
-    /// 
+    ///
     /// <returns>
     /// The setting at the specified index.
     /// Note: no setting is created when using this accessor.
     /// </returns>
-    /// 
-    /// <exception cref="ArgumentOutOfRangeException">When <paramref name="index"/> is out of range.</exception>
+    ///
+    /// <exception cref="ArgumentOutOfRangeException">When <paramref name="index"/> is out of
+    /// range.</exception>
     public Setting this[int index]
     {
       get
@@ -531,13 +530,15 @@ namespace SharpConfig
     /// </returns>
     public IEnumerable<Setting> GetSettingsNamed(string name)
     {
-      return _settings.Where(setting => string.Equals(setting.Name, name, StringComparison.OrdinalIgnoreCase));
+      return _settings.Where(
+          setting => string.Equals(setting.Name, name, StringComparison.OrdinalIgnoreCase));
     }
 
     // Finds a setting by its name.
     private Setting FindSetting(string name)
     {
-      return _settings.FirstOrDefault(setting => string.Equals(setting.Name, name, StringComparison.OrdinalIgnoreCase));
+      return _settings.FirstOrDefault(
+          setting => string.Equals(setting.Name, name, StringComparison.OrdinalIgnoreCase));
     }
 
     /// <summary>
@@ -545,7 +546,6 @@ namespace SharpConfig
     /// An example for a section would be "[Section]".
     /// </summary>
     /// <returns>The element's expression as a string.</returns>
-    protected override string GetStringExpression()
-      => $"[{Name}]";
+    protected override string GetStringExpression() => $"[{Name}]";
   }
 }

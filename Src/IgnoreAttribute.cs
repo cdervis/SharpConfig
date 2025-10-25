@@ -13,5 +13,6 @@ namespace SharpConfig
   /// sections from objects and vice versa.
   /// </summary>
   public sealed class IgnoreAttribute : Attribute
-  { }
+  {
+  }
 }

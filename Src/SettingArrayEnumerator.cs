@@ -81,8 +81,7 @@ namespace SharpConfig
 
       // See if this is an empty array such as "{    }" or "{}".
       // If so, this is a valid array, but with size 0.
-      if (_idxInString == _lastRBraceIdx ||
-          !IsNonEmptyValue(_stringValue, _idxInString, _lastRBraceIdx))
+      if (_idxInString == _lastRBraceIdx || !IsNonEmptyValue(_stringValue, _idxInString, _lastRBraceIdx))
       {
         IsValid = true;
         _isDone = true;
@@ -92,10 +91,7 @@ namespace SharpConfig
 
     private void UpdateElementString(int idx)
     {
-      Current = _stringValue.Substring(
-        _prevElemIdxInString,
-        idx - _prevElemIdxInString
-        );
+      Current = _stringValue.Substring(_prevElemIdxInString, idx - _prevElemIdxInString);
 
       Current = Current.Trim(' '); // trim spaces first
 

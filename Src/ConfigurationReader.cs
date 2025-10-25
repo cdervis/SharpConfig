@@ -25,10 +25,8 @@ namespace SharpConfig
     {
       var currentSection = new Section(Section.DefaultSectionName);
       var preCommentBuilder = new StringBuilder();
-
-      int lineNumber = 0;
-
-      string line;
+      var lineNumber = 0;
+      var line = string.Empty;
 
       // Read until EOF.
       while ((line = reader.ReadLine()) != null)
@@ -81,7 +79,8 @@ namespace SharpConfig
           if (!Configuration.IgnorePreComments && preCommentBuilder.Length > 0)
           {
             // Set the current section's pre-comment, removing the last newline character.
-            currentSection.PreComment = preCommentBuilder.ToString().TrimEnd(Environment.NewLine.ToCharArray());
+            currentSection.PreComment =
+                preCommentBuilder.ToString().TrimEnd(Environment.NewLine.ToCharArray());
             preCommentBuilder.Length = 0; // Clear the SB - With .NET >= 4.0: preCommentBuilder.Clear()
           }
 
@@ -89,7 +88,8 @@ namespace SharpConfig
         }
         else // Setting
         {
-          var setting = ParseSetting(Configuration.IgnoreInlineComments ? line : lineWithoutComment, lineNumber);
+          var setting =
+              ParseSetting(Configuration.IgnoreInlineComments ? line : lineWithoutComment, lineNumber);
 
           if (!Configuration.IgnoreInlineComments)
           {
@@ -100,7 +100,7 @@ namespace SharpConfig
           {
             // Set the setting's pre-comment, removing the last newline character.
             setting.PreComment = preCommentBuilder.ToString().TrimEnd(Environment.NewLine.ToCharArray());
-            preCommentBuilder.Length = 0; // Clear the SB - With .NET >= 4.0: preCommentBuilder.Clear()
+            preCommentBuilder.Clear();
           }
 
           currentSection.Add(setting);
@@ -174,9 +174,8 @@ namespace SharpConfig
 
       string endPart = line.Substring(closingBracketIndex + 1).Trim();
 
-      return endPart.Length > 0
-        ? throw new ParserException($"unexpected token: '{endPart}'", lineNumber)
-        : new Section(sectionName);
+      return endPart.Length > 0 ? throw new ParserException($"unexpected token: '{endPart}'", lineNumber)
+                                : new Section(sectionName);
     }
 
     private static Setting ParseSetting(string line, int lineNumber)
@@ -199,8 +198,7 @@ namespace SharpConfig
         do
         {
           closingQuoteIndex = line.IndexOf('\"', closingQuoteIndex + 1);
-        }
-        while (closingQuoteIndex > 0 && line[closingQuoteIndex - 1] == '\\');
+        } while (closingQuoteIndex > 0 && line[closingQuoteIndex - 1] == '\\');
 
         if (closingQuoteIndex < 0)
         {
@@ -265,10 +263,7 @@ namespace SharpConfig
 
         for (int j = 0; j < settingCount; j++)
         {
-          var setting = new Setting(reader.ReadString())
-          {
-            RawValue = reader.ReadString()
-          };
+          var setting = new Setting(reader.ReadString()) { RawValue = reader.ReadString() };
 
           ReadCommentsBinary(reader, setting);
 
