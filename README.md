@@ -48,13 +48,13 @@ To read these values, your C# code would look like:
 var config = Configuration.LoadFromFile("sample.cfg");
 var section = config["General"];
 
-string someString = section["SomeString"].StringValue;
-int someInteger = section["SomeInteger"].IntValue;
-float someFloat = section["SomeFloat"].FloatValue;
-bool someBool = section["SomeBoolean"].BoolValue;
-int[] someIntArray = section["SomeArray"].IntValueArray;
-string[] someStringArray = section["SomeArray"].StringValueArray;
-DayOfWeek day = section["Day"].GetValue<DayOfWeek>();
+string    someString      = section["SomeString"].StringValue;
+int       someInteger     = section["SomeInteger"].IntValue;
+float     someFloat       = section["SomeFloat"].FloatValue;
+bool      someBool        = section["SomeBoolean"].BoolValue;
+int[]     someIntArray    = section["SomeArray"].IntValueArray;
+string[]  someStringArray = section["SomeArray"].StringValueArray;
+DayOfWeek day             = section["Day"].GetValue<DayOfWeek>();
 
 // Entire user-defined objects can be created from sections and vice versa.
 var person = config["Person"].ToObject<Person>();
