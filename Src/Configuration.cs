@@ -35,7 +35,7 @@ namespace SharpConfig
       // but without modifying the real invariant culture instance.
       s_cultureInfo = (CultureInfo)CultureInfo.InvariantCulture.Clone();
 
-      ValidCommentChars = new[] { '#', ';' };
+      ValidCommentChars = new HashSet<char> { '#', ';' };
       s_preferredCommentChar = '#';
       s_arrayElementSeparator = ',';
 
@@ -585,7 +585,7 @@ namespace SharpConfig
     /// Gets the array that contains all valid comment delimiting characters.
     /// The current value is { '#', ';' }.
     /// </summary>
-    public static char[] ValidCommentChars { get; private set; }
+    public static HashSet<char> ValidCommentChars { get; private set; }
 
     /// <summary>
     /// Gets or sets the preferred comment char when saving configurations.
@@ -597,7 +597,7 @@ namespace SharpConfig
     {
       get => s_preferredCommentChar;
       set {
-        if (!Array.Exists(ValidCommentChars, c => c == value))
+        if (!ValidCommentChars.Contains(value))
         {
           throw new ArgumentException("The specified char '" + value + "' is not allowed as a comment char.");
         }

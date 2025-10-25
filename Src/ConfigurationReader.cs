@@ -4,7 +4,6 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Collections.Generic;
 
 namespace SharpConfig
 {
@@ -26,7 +25,6 @@ namespace SharpConfig
     {
       var currentSection = new Section(Section.DefaultSectionName);
       var preCommentBuilder = new StringBuilder();
-      HashSet<char> validCommentChars = new HashSet<char>(Configuration.ValidCommentChars); // Initialize once for each reader to optimize performance
       var lineNumber = 0;
       string line;
 
@@ -44,7 +42,7 @@ namespace SharpConfig
           continue;
         }
 
-        var comment = ParseComment(line, validCommentChars, out int commentIndex);
+        var comment = ParseComment(line, out int commentIndex);
 
         if (commentIndex == 0)
         {
@@ -111,7 +109,7 @@ namespace SharpConfig
       }
     }
 
-    private static string ParseComment(string line, HashSet<char> validCommentChars, out int commentCharIndex)
+    private static string ParseComment(string line, out int commentCharIndex)
     {
       // A comment starts with a valid comment character that:
       // 1. is not within a quote (eg. "this is # not a comment"), and
@@ -130,7 +128,7 @@ namespace SharpConfig
       while (index < length) // traverse line from left to right
       {
         var currentChar = line[index];
-        var isValidCommentChar = validCommentChars.Contains(currentChar);
+        var isValidCommentChar = Configuration.ValidCommentChars.Contains(currentChar);
         var isQuotationMark = currentChar == '\"';
         var isCharWithinQuotes = (quoteCount & 1) == 1; // bitwise AND is slightly faster
         var isCharEscaped = index > 0 && line[index - 1] == '\\';
