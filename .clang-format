@@ -1,0 +1,32 @@
+UseTab: Never
+TabWidth: 2
+ColumnLimit: 110
+AlignAfterOpenBracket: AlwaysBreak
+AlignOperands: Align
+AlignTrailingComments: false
+BraceWrapping:
+  AfterControlStatement: true
+  BeforeElse: true
+  AfterFunction: true
+  BeforeCatch: true
+  BeforeLambdaBody: true
+  BeforeWhile: true
+  AfterClass: true
+  AfterEnum: true
+  AfterStruct: true
+  AfterUnion: true
+BreakBeforeBraces: Allman
+MaxEmptyLinesToKeep: 1
+NamespaceIndentation: All
+IndentCaseLabels: true
+AllowShortIfStatementsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Never
+SortUsingDeclarations: LexicographicNumeric
+AllowShortCaseExpressionOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortCompoundRequirementOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: false
+AllowShortLambdasOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AllowShortNamespacesOnASingleLine: false

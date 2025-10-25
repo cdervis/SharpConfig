@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2013-2022 Cemalettin Dervis, MIT License.
-// https://github.com/cemdervis/SharpConfig
+﻿// Copyright (c) 2013-2025 Cem Dervis, MIT License.
+// https://sharpconfig.org
 
 using System;
 using SharpConfig;
@@ -9,7 +9,7 @@ namespace Tests
 {
   class Person
   {
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     public int Age { get; set; }
   }
@@ -20,6 +20,7 @@ namespace Tests
     public override string ConvertToString(object value)
     {
       var person = (Person)value;
+
       return $"[{person.Name};{person.Age}]";
     }
 
@@ -29,7 +30,7 @@ namespace Tests
     {
       try
       {
-        string[] split = value.Trim('[', ']').Split(';');
+        var split = value.Trim('[', ']').Split(';');
 
         return new Person { Name = split[0], Age = int.Parse(split[1]) };
       }
@@ -48,11 +49,7 @@ namespace Tests
     {
       Configuration.RegisterTypeStringConverter(new PersonStringConverter());
 
-      var p = new Person()
-      {
-        Name = "TestPerson",
-        Age = 123
-      };
+      var p = new Person() { Name = "TestPerson", Age = 123 };
 
       var cfg = new Configuration();
       cfg["TestSection"]["Person"].SetValue(p);

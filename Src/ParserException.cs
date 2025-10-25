@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2013-2022 Cemalettin Dervis, MIT License.
-// https://github.com/cemdervis/SharpConfig
+﻿// Copyright (c) 2013-2025 Cem Dervis, MIT License.
+// https://sharpconfig.org
 
 using System;
 
@@ -12,8 +12,7 @@ namespace SharpConfig
   [Serializable]
   public sealed class ParserException : Exception
   {
-    internal ParserException(string message, int line)
-        : base($"Line {line}: {message}")
+    internal ParserException(string message, int line) : base($"Line {line}: {message}")
     {
       Line = line;
     }

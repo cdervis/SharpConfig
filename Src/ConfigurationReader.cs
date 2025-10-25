@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2013-2022 Cemalettin Dervis, MIT License.
-// https://github.com/cemdervis/SharpConfig
+﻿// Copyright (c) 2013-2025 Cem Dervis, MIT License.
+// https://sharpconfig.org
 
 using System;
 using System.IO;
@@ -27,15 +27,13 @@ namespace SharpConfig
       var currentSection = new Section(Section.DefaultSectionName);
       var preCommentBuilder = new StringBuilder();
       HashSet<char> validCommentChars = new HashSet<char>(Configuration.ValidCommentChars); // Initialize once for each reader to optimize performance
-
-      int lineNumber = 0;
-
+      var lineNumber = 0;
       string line;
 
       // Read until EOF.
       while ((line = reader.ReadLine()) != null)
       {
-        lineNumber++;
+        ++lineNumber;
 
         // Remove all leading/trailing white-spaces.
         line = line.Trim();
@@ -59,7 +57,7 @@ namespace SharpConfig
           continue;
         }
 
-        string lineWithoutComment = line;
+        var lineWithoutComment = line;
         if (commentIndex > 0)
         {
           lineWithoutComment = line.Remove(commentIndex).Trim(); // remove inline comment
@@ -83,7 +81,9 @@ namespace SharpConfig
           if (!Configuration.IgnorePreComments && preCommentBuilder.Length > 0)
           {
             // Set the current section's pre-comment, removing the last newline character.
-            currentSection.PreComment = preCommentBuilder.ToString().TrimEnd(Environment.NewLine.ToCharArray());
+            currentSection.PreComment =
+                preCommentBuilder.ToString().TrimEnd(Environment.NewLine.ToCharArray());
+
             preCommentBuilder.Length = 0; // Clear the SB - With .NET >= 4.0: preCommentBuilder.Clear()
           }
 
@@ -91,7 +91,8 @@ namespace SharpConfig
         }
         else // Setting
         {
-          var setting = ParseSetting(Configuration.IgnoreInlineComments ? line : lineWithoutComment, lineNumber);
+          var setting =
+              ParseSetting(Configuration.IgnoreInlineComments ? line : lineWithoutComment, lineNumber);
 
           if (!Configuration.IgnoreInlineComments)
           {
@@ -102,7 +103,7 @@ namespace SharpConfig
           {
             // Set the setting's pre-comment, removing the last newline character.
             setting.PreComment = preCommentBuilder.ToString().TrimEnd(Environment.NewLine.ToCharArray());
-            preCommentBuilder.Length = 0; // Clear the SB - With .NET >= 4.0: preCommentBuilder.Clear()
+            preCommentBuilder.Clear();
           }
 
           currentSection.Add(setting);
@@ -122,16 +123,17 @@ namespace SharpConfig
       string comment = null;
       commentCharIndex = -1;
 
-      int index = 0;
-      int quoteCount = 0;
-      int length = line.Length;
+      var index = 0;
+      var quoteCount = 0;
+
+      var length = line.Length;
       while (index < length) // traverse line from left to right
       {
-        char currentChar = line[index];
-        bool isValidCommentChar = validCommentChars.Contains(currentChar);
-        bool isQuotationMark = currentChar == '\"';
-        bool isCharWithinQuotes = (quoteCount & 1) == 1; // bitwise AND is slightly faster
-        bool isCharEscaped = index > 0 && line[index - 1] == '\\';
+        var currentChar = line[index];
+        var isValidCommentChar = validCommentChars.Contains(currentChar);
+        var isQuotationMark = currentChar == '\"';
+        var isCharWithinQuotes = (quoteCount & 1) == 1; // bitwise AND is slightly faster
+        var isCharEscaped = index > 0 && line[index - 1] == '\\';
 
         if (isValidCommentChar && !isCharWithinQuotes && !isCharEscaped)
         {
@@ -140,10 +142,10 @@ namespace SharpConfig
 
         if (isQuotationMark && !isCharEscaped)
         {
-          quoteCount++; // a non-escaped quotation mark has been found
+          ++quoteCount; // a non-escaped quotation mark has been found
         }
 
-        index++;
+        ++index;
       }
 
       if (index < line.Length)
@@ -162,13 +164,14 @@ namespace SharpConfig
       // 1) [<name>]
       //      <name> may contain any char, including '[', ']', and a valid comment delimiter character
 
-      int closingBracketIndex = line.LastIndexOf(']');
+      var closingBracketIndex = line.LastIndexOf(']');
+
       if (closingBracketIndex < 0)
       {
-        throw new ParserException("closing bracket missing.", lineNumber);
+        throw new ParserException("Closing bracket missing.", lineNumber);
       }
 
-      string sectionName = line.Substring(1, closingBracketIndex - 1).Trim();
+      var sectionName = line.Substring(1, closingBracketIndex - 1).Trim();
 
       // Anything after the (last) closing bracket must be whitespace.
       if (line.Length <= closingBracketIndex + 1)
@@ -176,11 +179,10 @@ namespace SharpConfig
         return new Section(sectionName);
       }
 
-      string endPart = line.Substring(closingBracketIndex + 1).Trim();
+      var endPart = line.Substring(closingBracketIndex + 1).Trim();
 
-      return endPart.Length > 0
-        ? throw new ParserException($"unexpected token: '{endPart}'", lineNumber)
-        : new Section(sectionName);
+      return endPart.Length > 0 ? throw new ParserException($"Unexpected token: '{endPart}'", lineNumber)
+                                : new Section(sectionName);
     }
 
     private static Setting ParseSetting(string line, int lineNumber)
@@ -195,20 +197,20 @@ namespace SharpConfig
       int equalSignIndex;
 
       // Parse the name first.
-      bool isQuotedName = line.StartsWith("\"");
+      var isQuotedName = line.StartsWith("\"");
+
       if (isQuotedName)
       {
         // Format 2
-        int closingQuoteIndex = 0;
+        var closingQuoteIndex = 0;
         do
         {
           closingQuoteIndex = line.IndexOf('\"', closingQuoteIndex + 1);
-        }
-        while (closingQuoteIndex > 0 && line[closingQuoteIndex - 1] == '\\');
+        } while (closingQuoteIndex > 0 && line[closingQuoteIndex - 1] == '\\');
 
         if (closingQuoteIndex < 0)
         {
-          throw new ParserException("closing quote mark expected.", lineNumber);
+          throw new ParserException("Closing quote mark expected.", lineNumber);
         }
 
         // Don't trim the name. Quoted names should be taken verbatim.
@@ -224,7 +226,7 @@ namespace SharpConfig
 
       if (equalSignIndex < 0)
       {
-        throw new ParserException("setting assignment expected.", lineNumber);
+        throw new ParserException("Setting assignment expected.", lineNumber);
       }
 
       if (!isQuotedName)
@@ -234,10 +236,10 @@ namespace SharpConfig
 
       if (string.IsNullOrEmpty(settingName))
       {
-        throw new ParserException("setting name expected.", lineNumber);
+        throw new ParserException("Setting name expected.", lineNumber);
       }
 
-      string settingValue = line.Substring(equalSignIndex + 1).Trim();
+      var settingValue = line.Substring(equalSignIndex + 1).Trim();
 
       return new Setting(settingName, settingValue);
     }
@@ -256,26 +258,20 @@ namespace SharpConfig
 
       var config = new Configuration();
 
-      int sectionCount = reader.ReadInt32();
+      var sectionCount = reader.ReadInt32();
 
       for (int i = 0; i < sectionCount; ++i)
       {
-        string sectionName = reader.ReadString();
-        int settingCount = reader.ReadInt32();
-
+        var sectionName = reader.ReadString();
+        var settingCount = reader.ReadInt32();
         var section = new Section(sectionName);
 
         ReadCommentsBinary(reader, section);
 
         for (int j = 0; j < settingCount; j++)
         {
-          var setting = new Setting(reader.ReadString())
-          {
-            RawValue = reader.ReadString()
-          };
-
+          var setting = new Setting(reader.ReadString()) { RawValue = reader.ReadString() };
           ReadCommentsBinary(reader, setting);
-
           section.Add(setting);
         }
 
@@ -287,7 +283,7 @@ namespace SharpConfig
 
     private static void ReadCommentsBinary(BinaryReader reader, ConfigurationElement element)
     {
-      bool hasComment = reader.ReadBoolean();
+      var hasComment = reader.ReadBoolean();
       if (hasComment)
       {
         // Read the comment char, but don't do anything with it.
@@ -296,7 +292,7 @@ namespace SharpConfig
         element.Comment = reader.ReadString();
       }
 
-      bool hasPreComment = reader.ReadBoolean();
+      var hasPreComment = reader.ReadBoolean();
       if (hasPreComment)
       {
         // Same as above.

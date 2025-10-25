@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2013-2022 Cemalettin Dervis, MIT License.
-// https://github.com/cemdervis/SharpConfig
+﻿// Copyright (c) 2013-2025 Cem Dervis, MIT License.
+// https://sharpconfig.org
 
 using System.IO;
 using SharpConfig;
@@ -29,9 +29,9 @@ namespace Tests
     [Test]
     public void WriteAndReadConfig_File()
     {
-      Configuration cfg = CreateExampleConfig();
+      var cfg = CreateExampleConfig();
 
-      string filename = Path.GetTempFileName();
+      var filename = Path.GetTempFileName();
 
       cfg.SaveToFile(filename);
       FileAssert.Exists(filename, "Failed to create the test config file.");
@@ -45,7 +45,7 @@ namespace Tests
     [Test]
     public void WriteAndReadConfig_Stream()
     {
-      Configuration cfg = CreateExampleConfig();
+      var cfg = CreateExampleConfig();
 
       var stream = new MemoryStream();
       cfg.SaveToStream(stream);
@@ -61,9 +61,9 @@ namespace Tests
     [Test]
     public void WriteAndReadConfig_BinaryFile()
     {
-      Configuration cfg = CreateExampleConfig();
+      var cfg = CreateExampleConfig();
 
-      string filename = Path.GetTempFileName();
+      var filename = Path.GetTempFileName();
 
       cfg.SaveToBinaryFile(filename);
       FileAssert.Exists(filename, "Failed to create the test config file.");
@@ -77,7 +77,7 @@ namespace Tests
     [Test]
     public void WriteAndReadConfig_BinaryStream()
     {
-      Configuration cfg = CreateExampleConfig();
+      var cfg = CreateExampleConfig();
 
       var stream = new MemoryStream();
       cfg.SaveToBinaryStream(stream);

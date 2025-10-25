@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2013-2022 Cemalettin Dervis, MIT License.
-// https://github.com/cemdervis/SharpConfig
+﻿// Copyright (c) 2013-2025 Cem Dervis, MIT License.
+// https://sharpconfig.org
 
 using System;
 using System.Diagnostics;
@@ -19,12 +19,13 @@ namespace SharpConfig
     // the underlying stream in Dispose().
     private class NonClosingBinaryWriter : BinaryWriter
     {
-      public NonClosingBinaryWriter(Stream stream)
-          : base(stream)
-      { }
+      public NonClosingBinaryWriter(Stream stream) : base(stream)
+      {
+      }
 
       protected override void Dispose(bool disposing)
-      { }
+      {
+      }
     }
 
     internal static void WriteToStreamTextual(Configuration cfg, Stream stream, Encoding encoding)
@@ -106,6 +107,5 @@ namespace SharpConfig
         writer.Write(element.PreComment);
       }
     }
-
   }
 }

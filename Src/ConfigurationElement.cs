@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2013-2022 Cemalettin Dervis, MIT License.
-// https://github.com/cemdervis/SharpConfig
+﻿// Copyright (c) 2013-2025 Cem Dervis, MIT License.
+// https://sharpconfig.org
 
 using System;
 
@@ -12,6 +12,8 @@ namespace SharpConfig
   /// </summary>
   public abstract class ConfigurationElement
   {
+    private static readonly string[] formattedPreCommentSeparator = new[] { "\r\n", "\n" };
+
     internal ConfigurationElement(string name)
     {
       if (string.IsNullOrEmpty(name))
@@ -43,10 +45,10 @@ namespace SharpConfig
     ///
     public override string ToString()
     {
-      string stringExpr = GetStringExpression();
+      var stringExpr = GetStringExpression();
 
-      if (Comment != null && PreComment != null &&
-        !Configuration.IgnoreInlineComments && !Configuration.IgnorePreComments)
+      if (Comment != null && PreComment != null && !Configuration.IgnoreInlineComments &&
+          !Configuration.IgnorePreComments)
       {
         // Include inline comment and pre-comments.
         return $"{GetFormattedPreComment()}{Environment.NewLine}{stringExpr} {GetFormattedComment()}";
@@ -72,30 +74,25 @@ namespace SharpConfig
     private string GetFormattedComment()
     {
       // Only get the first line of the inline comment.
-      string comment = Comment;
+      var comment = Comment;
 
-      int iNewLine = Comment.IndexOfAny(Environment.NewLine.ToCharArray());
-      if (iNewLine >= 0)
+      var newLineIndex = Comment.IndexOfAny(Environment.NewLine.ToCharArray());
+      if (newLineIndex >= 0)
       {
-        comment = comment.Substring(0, iNewLine);
+        comment = comment.Substring(0, newLineIndex);
       }
 
-      return (Configuration.PreferredCommentChar + " " + comment);
+      return Configuration.PreferredCommentChar + " " + comment;
     }
 
     // Gets a formatted pre-comment string that is ready
     // to be written to a config file.
     private string GetFormattedPreComment()
     {
-      string[] lines = PreComment.Split(
-          new[] { "\r\n", "\n" },
-          StringSplitOptions.None
-          );
+      var lines = PreComment.Split(formattedPreCommentSeparator, StringSplitOptions.None);
 
       return string.Join(
-          Environment.NewLine,
-          Array.ConvertAll(lines, s => Configuration.PreferredCommentChar + " " + s)
-          );
+          Environment.NewLine, Array.ConvertAll(lines, s => Configuration.PreferredCommentChar + " " + s));
     }
 
     /// <summary>
