@@ -2,6 +2,7 @@
 // https://sharpconfig.org
 
 using System;
+using System.Linq;
 using System.Text;
 
 namespace SharpConfig
@@ -612,8 +613,10 @@ namespace SharpConfig
         return rawValue;
       }
 
+      bool isAnyCommentCharInRawValue() => rawValue.Any(c => Configuration.ValidCommentChars.Contains(c));
+
       if (rawValue.IndexOf(" ", StringComparison.Ordinal) >= 0 ||
-          (rawValue.IndexOfAny(Configuration.ValidCommentChars) >= 0 && !Configuration.IgnoreInlineComments))
+          (isAnyCommentCharInRawValue() && !Configuration.IgnoreInlineComments))
       {
         rawValue = "\"" + rawValue + "\"";
       }

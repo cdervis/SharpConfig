@@ -124,11 +124,13 @@ namespace SharpConfig
       var index = 0;
       var quoteCount = 0;
 
-      while (line.Length > index) // traverse line from left to right
+      var length = line.Length;
+      while (index < length) // traverse line from left to right
       {
-        var isValidCommentChar = Array.IndexOf(Configuration.ValidCommentChars, line[index]) > -1;
-        var isQuotationMark = line[index] == '\"';
-        var isCharWithinQuotes = quoteCount % 2 == 1;
+        var currentChar = line[index];
+        var isValidCommentChar = Configuration.ValidCommentChars.Contains(currentChar);
+        var isQuotationMark = currentChar == '\"';
+        var isCharWithinQuotes = (quoteCount & 1) == 1; // bitwise AND is slightly faster
         var isCharEscaped = index > 0 && line[index - 1] == '\\';
 
         if (isValidCommentChar && !isCharWithinQuotes && !isCharEscaped)
