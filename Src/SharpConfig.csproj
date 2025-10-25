@@ -11,7 +11,7 @@
     <PackageIcon>logo256.png</PackageIcon>
     <Version>4.0</Version>
     <Authors>Cem Dervis</Authors>
-    <PackageProjectUrl>https://github.com/cemdervis/SharpConfig</PackageProjectUrl>
+    <PackageProjectUrl>https://sharpconfig.org</PackageProjectUrl>
     <RepositoryUrl>https://github.com/cdervis/SharpConfig</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>sharpconfig config c# csharp cfg ini configuration library settings</PackageTags>

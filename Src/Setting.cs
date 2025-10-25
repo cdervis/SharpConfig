@@ -1,5 +1,5 @@
 ﻿// Copyright (c) 2013-2025 Cem Dervis, MIT License.
-// https://github.com/cemdervis/SharpConfig
+// https://sharpconfig.org
 
 using System;
 using System.Text;
