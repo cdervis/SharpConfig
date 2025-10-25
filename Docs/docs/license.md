@@ -7,7 +7,7 @@ SharpConfig is licensed under the [MIT license](https://choosealicense.com/licen
 ```
 MIT License
 
-Copyright (c) 2013-2025 Cemalettin Dervis
+Copyright (c) 2013-2025 Cem Dervis
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

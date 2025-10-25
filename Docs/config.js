@@ -64,7 +64,7 @@ module.exports = {
       { title: 'License', path: 'license', icon: 'copyright' }
     ],
 
-  footer: '© ' + new Date().getFullYear() + ' <a href="https://dervis.de">Cemalettin Dervis</a>',
+  footer: '© ' + new Date().getFullYear() + ' <a href="https://dervis.de">Cem Dervis</a>',
   madeWithDocmd: 'Made with',
 
   favicon: '/assets/images/favicon.ico',

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2013-2022 Cemalettin Dervis, MIT License.
+﻿// Copyright (c) 2013-2025 Cem Dervis, MIT License.
 // https://github.com/cemdervis/SharpConfig
 
 using System;
