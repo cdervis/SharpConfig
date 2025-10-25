@@ -12,6 +12,7 @@ namespace SharpConfig
   /// of a type, that property will be ignored when creating
   /// sections from objects and vice versa.
   /// </summary>
+  [AttributeUsage(AttributeTargets.All)]
   public sealed class IgnoreAttribute : Attribute
   {
   }
