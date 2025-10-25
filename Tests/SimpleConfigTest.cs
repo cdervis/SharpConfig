@@ -88,40 +88,32 @@ namespace Tests
       }
 
       // Verify that wrong usage of GetValue throws.
-      Assert.Throws<InvalidOperationException>(() =>
-      {
-        cfg["TestSection"]["IntArray"].GetValue(typeof(int[]));
-      });
-      Assert.Throws<InvalidOperationException>(() =>
-      {
-        cfg["TestSection"]["IntArray"].GetValue(typeof(int[][]));
-      });
-      Assert.Throws<InvalidOperationException>(() =>
-      {
-        cfg["TestSection"]["IntArray"].GetValue<int[]>();
-      });
-      Assert.Throws<InvalidOperationException>(() =>
-      {
-        cfg["TestSection"]["IntArray"].GetValue<int[][]>();
-      });
+      Assert.Throws<InvalidOperationException>(
+          () =>
+          { cfg["TestSection"]["IntArray"].GetValue(typeof(int[])); });
+      Assert.Throws<InvalidOperationException>(
+          () =>
+          { cfg["TestSection"]["IntArray"].GetValue(typeof(int[][])); });
+      Assert.Throws<InvalidOperationException>(
+          () =>
+          { cfg["TestSection"]["IntArray"].GetValue<int[]>(); });
+      Assert.Throws<InvalidOperationException>(
+          () =>
+          { cfg["TestSection"]["IntArray"].GetValue<int[][]>(); });
 
       // Verify that wrong usage of GetValueArray throws.
-      Assert.Throws<ArgumentException>(() =>
-      {
-        cfg["TestSection"]["IntArray"].GetValueArray(typeof(int[]));
-      });
-      Assert.Throws<ArgumentException>(() =>
-      {
-        cfg["TestSection"]["IntArray"].GetValueArray<int[]>();
-      });
-      Assert.Throws<ArgumentException>(() =>
-      {
-        cfg["TestSection"]["IntArray"].GetValueArray(typeof(int[][]));
-      });
-      Assert.Throws<ArgumentException>(() =>
-      {
-        cfg["TestSection"]["IntArray"].GetValueArray<int[][]>();
-      });
+      Assert.Throws<ArgumentException>(
+          () =>
+          { cfg["TestSection"]["IntArray"].GetValueArray(typeof(int[])); });
+      Assert.Throws<ArgumentException>(
+          () =>
+          { cfg["TestSection"]["IntArray"].GetValueArray<int[]>(); });
+      Assert.Throws<ArgumentException>(
+          () =>
+          { cfg["TestSection"]["IntArray"].GetValueArray(typeof(int[][])); });
+      Assert.Throws<ArgumentException>(
+          () =>
+          { cfg["TestSection"]["IntArray"].GetValueArray<int[][]>(); });
     }
 
     [Test]
@@ -169,21 +161,20 @@ namespace Tests
     {
       var cfg = new Configuration();
 
-      object[] obj = new object[] { 1, 2, 3 };
+      var obj = new object[] { 1, 2, 3 };
 
       var setting = cfg["TestSection"]["TestSetting"];
       setting.SetValue(obj);
 
       // GetValue() should throw, because the setting is an array now.
       // It should notify us to use GetValueArray() instead.
-      Assert.Throws<InvalidOperationException>(() =>
-      {
-        setting.GetValue(typeof(int));
-      });
+      Assert.Throws<InvalidOperationException>(
+          () =>
+          { setting.GetValue(typeof(int)); });
 
       // Now get the array object and check.
-      object[] intsNonGeneric = setting.GetValueArray(typeof(int));
-      int[] intsGeneric = setting.GetValueArray<int>();
+      var intsNonGeneric = setting.GetValueArray(typeof(int));
+      var intsGeneric = setting.GetValueArray<int>();
 
       Assert.AreEqual(obj.Length, intsGeneric.Length);
       Assert.AreEqual(intsGeneric.Length, intsNonGeneric.Length);
@@ -199,39 +190,35 @@ namespace Tests
     public void SaveAndLoadComments()
     {
       var cfgStr =
-          "# Line1" + Environment.NewLine +
-          "; Line2" + Environment.NewLine +
-          "#" + Environment.NewLine +
-          "# Line4" + Environment.NewLine +
-          "[Section] # InlineComment1" + Environment.NewLine +
-          "Setting = Value ; InlineComment2" + Environment.NewLine +
+          "# Line1" + Environment.NewLine + "; Line2" + Environment.NewLine + "#" + Environment.NewLine +
+          "# Line4" + Environment.NewLine + "[Section] # InlineComment1" + Environment.NewLine +
+          "Setting = Value ; InlineComment2" + Environment.NewLine + Environment.NewLine + "# Line1   " +
+          Environment.NewLine + "#Line2 " + Environment.NewLine + "## ###" + Environment.NewLine + ";Line4" +
+          Environment.NewLine + "[Section2]" + Environment.NewLine + "Setting=\"Val;#ue\"# InlineComment3" +
           Environment.NewLine +
-          "# Line1   " + Environment.NewLine +
-          "#Line2 " + Environment.NewLine +
-          "## ###" + Environment.NewLine +
-          ";Line4" + Environment.NewLine +
-          "[Section2]" + Environment.NewLine +
-          "Setting=\"Val;#ue\"# InlineComment3" + Environment.NewLine +
-          "ValidUglySetting1 = \"this is # not a comment\" # this is a comment \"with a quote\" inside" + Environment.NewLine +
-          "ValidUglySetting2 = this is \\# not a comment # this is a comment" + Environment.NewLine +
-          "ValidUglySetting3 = { first, \"second # still, second\" } # comment \"with a quote\" and a closing brace }";
+          "ValidUglySetting1 = \"this is # not a comment\" # this is a comment \"with a quote\" inside" +
+          Environment.NewLine + "ValidUglySetting2 = this is \\# not a comment # this is a comment" +
+          Environment.NewLine +
+          ("ValidUglySetting3 = { first, \"second # still, second\" } # comment \"with a quote\" and a " +
+           "closing brace }");
 
       var cfg = Configuration.LoadFromString(cfgStr);
 
       SaveAndLoadComments_Check(cfg);
 
-      TestWithFile(cfg, filename =>
-      {
-        // Textual first
-        cfg.SaveToFile(filename);
-        cfg = Configuration.LoadFromFile(filename);
-        SaveAndLoadComments_Check(cfg);
+      TestWithFile(
+          filename =>
+          {
+            // Textual first
+            cfg.SaveToFile(filename);
+            cfg = Configuration.LoadFromFile(filename);
+            SaveAndLoadComments_Check(cfg);
 
-        // Now binary
-        cfg.SaveToBinaryFile(filename);
-        cfg = Configuration.LoadFromBinaryFile(filename);
-        SaveAndLoadComments_Check(cfg);
-      });
+            // Now binary
+            cfg.SaveToBinaryFile(filename);
+            cfg = Configuration.LoadFromBinaryFile(filename);
+            SaveAndLoadComments_Check(cfg);
+          });
     }
 
     private static void SaveAndLoadComments_Check(Configuration cfg)
@@ -252,20 +239,13 @@ namespace Tests
       Assert.IsNotNull(section2.PreComment);
 
       Assert.AreEqual(
-          "Line1" + Environment.NewLine +
-          "Line2" + Environment.NewLine +
-          Environment.NewLine +
-          "Line4",
-          section.PreComment
-          );
+          "Line1" + Environment.NewLine + "Line2" + Environment.NewLine + Environment.NewLine + "Line4",
+          section.PreComment);
 
       Assert.AreEqual(
-          "Line1" + Environment.NewLine +
-          "Line2" + Environment.NewLine +
-          "# ###" + Environment.NewLine +
-          "Line4",
-          section2.PreComment
-          );
+          "Line1" + Environment.NewLine + "Line2" + Environment.NewLine + "# ###" + Environment.NewLine +
+              "Line4",
+          section2.PreComment);
 
       Assert.AreEqual("InlineComment1", section.Comment);
       Assert.AreEqual("InlineComment2", section["Setting"].Comment);
@@ -274,7 +254,8 @@ namespace Tests
       Assert.AreEqual("InlineComment3", section2["Setting"].Comment);
       Assert.AreEqual("this is a comment \"with a quote\" inside", section2["ValidUglySetting1"].Comment);
       Assert.AreEqual("this is a comment", section2["ValidUglySetting2"].Comment);
-      Assert.AreEqual("comment \"with a quote\" and a closing brace }", section2["ValidUglySetting3"].Comment);
+      Assert.AreEqual(
+          "comment \"with a quote\" and a closing brace }", section2["ValidUglySetting3"].Comment);
 
       Assert.AreEqual("Value", section["Setting"].StringValue);
       Assert.AreEqual("Val;#ue", section2["Setting"].StringValue);
@@ -284,7 +265,6 @@ namespace Tests
       Assert.AreEqual(2, section2["ValidUglySetting3"].ArraySize);
       Assert.AreEqual("first", section2["ValidUglySetting3"].StringValueArray[0]);
       Assert.AreEqual("second # still, second", section2["ValidUglySetting3"].StringValueArray[1]);
-
     }
 
     [Test]
@@ -328,14 +308,14 @@ namespace Tests
       AssertArraysAreEqual(new[] { "{123}", "456" }, section["Setting12"].StringValueArray);
 
       Assert.IsTrue(section["Setting13"].IsArray);
-      AssertArraysAreEqual(new[] { "first\"\"second", "third fourth", "fifth" }, section["Setting13"].StringValueArray);
+      AssertArraysAreEqual(
+          new[] { "first\"\"second", "third fourth", "fifth" }, section["Setting13"].StringValueArray);
     }
 
     sealed class SectionTestObject
     {
-      public string[] SomeArrayProp { get; set; }
-
-      public string[] SomeArrayField;
+      public string[]? SomeArrayProp { get; set; }
+      public string[]? SomeArrayField;
     }
 
     [Test]
@@ -349,8 +329,8 @@ namespace Tests
 
       var obj = section.ToObject<SectionTestObject>();
 
-      AssertArraysAreEqual(new[] { "1", "2", "3" }, obj.SomeArrayProp);
-      AssertArraysAreEqual(new[] { "4", "5", "6" }, obj.SomeArrayField);
+      AssertArraysAreEqual(new[] { "1", "2", "3" }, obj.SomeArrayProp!);
+      AssertArraysAreEqual(new[] { "4", "5", "6" }, obj.SomeArrayField!);
 
       section = cfg["Section2"];
       section.Add("SomeArrayProp");
@@ -377,20 +357,21 @@ namespace Tests
       setting.FloatValueArray = floats;
       AssertArraysAreEqual(setting.FloatValueArray, floats);
 
-      TestWithFile(cfg, filename =>
-      {
-        cfg.SaveToFile(filename);
-        cfg = Configuration.LoadFromFile(filename);
-        setting = cfg["Section"]["Setting"];
+      TestWithFile(
+          filename =>
+          {
+            cfg.SaveToFile(filename);
+            cfg = Configuration.LoadFromFile(filename);
+            setting = cfg["Section"]["Setting"];
 
-        AssertArraysAreEqual(floats, setting.FloatValueArray);
+            AssertArraysAreEqual(floats, setting.FloatValueArray);
 
-        cfg.SaveToBinaryFile(filename);
-        cfg = Configuration.LoadFromBinaryFile(filename);
-        setting = cfg["Section"]["Setting"];
+            cfg.SaveToBinaryFile(filename);
+            cfg = Configuration.LoadFromBinaryFile(filename);
+            setting = cfg["Section"]["Setting"];
 
-        AssertArraysAreEqual(floats, setting.FloatValueArray);
-      });
+            AssertArraysAreEqual(floats, setting.FloatValueArray);
+          });
     }
 
     [Test]
@@ -409,20 +390,21 @@ namespace Tests
       setting.DoubleValueArray = doubles;
       AssertArraysAreEqual(setting.DoubleValueArray, doubles);
 
-      TestWithFile(cfg, filename =>
-      {
-        cfg.SaveToFile(filename);
-        cfg = Configuration.LoadFromFile(filename);
-        setting = cfg["Section"]["Setting"];
+      TestWithFile(
+          filename =>
+          {
+            cfg.SaveToFile(filename);
+            cfg = Configuration.LoadFromFile(filename);
+            setting = cfg["Section"]["Setting"];
 
-        AssertArraysAreEqual(doubles, setting.DoubleValueArray);
+            AssertArraysAreEqual(doubles, setting.DoubleValueArray);
 
-        cfg.SaveToBinaryFile(filename);
-        cfg = Configuration.LoadFromBinaryFile(filename);
-        setting = cfg["Section"]["Setting"];
+            cfg.SaveToBinaryFile(filename);
+            cfg = Configuration.LoadFromBinaryFile(filename);
+            setting = cfg["Section"]["Setting"];
 
-        AssertArraysAreEqual(doubles, setting.DoubleValueArray);
-      });
+            AssertArraysAreEqual(doubles, setting.DoubleValueArray);
+          });
     }
 
     [Test]
@@ -437,24 +419,26 @@ namespace Tests
       setting.DecimalValue = -100.0m;
       Assert.AreEqual(setting.DoubleValue, -100.0);
 
-      var decimals = new decimal[] { 0.0m, 100.0m, -100.0m, 40000.0m, 2004.40493028m, decimal.MinValue, decimal.MaxValue };
+      var decimals = new decimal[] { 0.0m,           100.0m,           -100.0m,         40000.0m,
+                                     2004.40493028m, decimal.MinValue, decimal.MaxValue };
       setting.DecimalValueArray = decimals;
       AssertArraysAreEqual(setting.DecimalValueArray, decimals);
 
-      TestWithFile(cfg, filename =>
-      {
-        cfg.SaveToFile(filename);
-        cfg = Configuration.LoadFromFile(filename);
-        setting = cfg["Section"]["Setting"];
+      TestWithFile(
+          filename =>
+          {
+            cfg.SaveToFile(filename);
+            cfg = Configuration.LoadFromFile(filename);
+            setting = cfg["Section"]["Setting"];
 
-        AssertArraysAreEqual(decimals, setting.DecimalValueArray);
+            AssertArraysAreEqual(decimals, setting.DecimalValueArray);
 
-        cfg.SaveToBinaryFile(filename);
-        cfg = Configuration.LoadFromBinaryFile(filename);
-        setting = cfg["Section"]["Setting"];
+            cfg.SaveToBinaryFile(filename);
+            cfg = Configuration.LoadFromBinaryFile(filename);
+            setting = cfg["Section"]["Setting"];
 
-        AssertArraysAreEqual(decimals, setting.DecimalValueArray);
-      });
+            AssertArraysAreEqual(decimals, setting.DecimalValueArray);
+          });
     }
 
     [Test]
@@ -473,22 +457,23 @@ namespace Tests
       setting.ByteValueArray = bytes;
       AssertArraysAreEqual(setting.ByteValueArray, bytes);
 
-      TestWithFile(cfg, filename =>
-      {
-        // Textual first
-        cfg.SaveToFile(filename);
-        cfg = Configuration.LoadFromFile(filename);
-        setting = cfg["Section"]["Setting"];
+      TestWithFile(
+          filename =>
+          {
+            // Textual first
+            cfg.SaveToFile(filename);
+            cfg = Configuration.LoadFromFile(filename);
+            setting = cfg["Section"]["Setting"];
 
-        AssertArraysAreEqual(bytes, setting.ByteValueArray);
+            AssertArraysAreEqual(bytes, setting.ByteValueArray);
 
-        // Now binary
-        cfg.SaveToBinaryFile(filename);
-        cfg = Configuration.LoadFromBinaryFile(filename);
-        setting = cfg["Section"]["Setting"];
+            // Now binary
+            cfg.SaveToBinaryFile(filename);
+            cfg = Configuration.LoadFromBinaryFile(filename);
+            setting = cfg["Section"]["Setting"];
 
-        AssertArraysAreEqual(bytes, setting.ByteValueArray);
-      });
+            AssertArraysAreEqual(bytes, setting.ByteValueArray);
+          });
     }
 
     [Test]
@@ -505,31 +490,31 @@ namespace Tests
       Assert.AreEqual(setting.SByteValue, (sbyte)value);
 
       setting.IntValue = 500;
-      Assert.Throws<SettingValueCastException>(() =>
-      {
-        sbyte value2 = setting.SByteValue;
-      });
+      Assert.Throws<SettingValueCastException>(
+          () =>
+          { sbyte value2 = setting.SByteValue; });
 
       var bytes = new sbyte[] { 0, 100, 120 };
       setting.SByteValueArray = bytes;
       AssertArraysAreEqual(setting.SByteValueArray, bytes);
 
-      TestWithFile(cfg, filename =>
-      {
-        // Textual first
-        cfg.SaveToFile(filename);
-        cfg = Configuration.LoadFromFile(filename);
-        setting = cfg["Section"]["Setting"];
+      TestWithFile(
+          filename =>
+          {
+            // Textual first
+            cfg.SaveToFile(filename);
+            cfg = Configuration.LoadFromFile(filename);
+            setting = cfg["Section"]["Setting"];
 
-        AssertArraysAreEqual(bytes, setting.SByteValueArray);
+            AssertArraysAreEqual(bytes, setting.SByteValueArray);
 
-        // Now binary
-        cfg.SaveToBinaryFile(filename);
-        cfg = Configuration.LoadFromBinaryFile(filename);
-        setting = cfg["Section"]["Setting"];
+            // Now binary
+            cfg.SaveToBinaryFile(filename);
+            cfg = Configuration.LoadFromBinaryFile(filename);
+            setting = cfg["Section"]["Setting"];
 
-        AssertArraysAreEqual(bytes, setting.SByteValueArray);
-      });
+            AssertArraysAreEqual(bytes, setting.SByteValueArray);
+          });
     }
 
     [Test]
@@ -552,22 +537,29 @@ namespace Tests
 
       AssertArraysAreEqual(chars, setting.CharValueArray);
 
-      TestWithFile(cfg, filename =>
-      {
-        // Textual first
-        cfg.SaveToFile(filename);
-        cfg = Configuration.LoadFromFile(filename);
-        setting = cfg["Section"]["Setting"];
+      TestWithFile(
+          filename =>
+          {
+            // Textual first
+            cfg.SaveToFile(filename);
+            cfg = Configuration.LoadFromFile(filename);
+            setting = cfg["Section"]["Setting"];
 
-        AssertArraysAreEqual(chars, setting.CharValueArray);
+            AssertArraysAreEqual(chars, setting.CharValueArray);
 
-        // Now binary
-        cfg.SaveToBinaryFile(filename);
-        cfg = Configuration.LoadFromBinaryFile(filename);
-        setting = cfg["Section"]["Setting"];
+            // Now binary
+            cfg.SaveToBinaryFile(filename);
+            cfg = Configuration.LoadFromBinaryFile(filename);
+            setting = cfg["Section"]["Setting"];
 
-        AssertArraysAreEqual(chars, setting.CharValueArray);
-      });
+            AssertArraysAreEqual(chars, setting.CharValueArray);
+          });
+    }
+
+    [Test]
+    public void Regex()
+    {
+      // var cfg = Configuration.LoadFromFile("RegexTest.txt");
     }
 
     [Test]
@@ -627,9 +619,13 @@ namespace Tests
 
       // Chose a random enum
       setting.SetValue(GCNotificationStatus.NotApplicable); // valid value
-      Assert.AreEqual(setting.GetValueOrDefault<GCNotificationStatus>(GCNotificationStatus.Succeeded), GCNotificationStatus.NotApplicable);
+      Assert.AreEqual(
+          setting.GetValueOrDefault<GCNotificationStatus>(GCNotificationStatus.Succeeded),
+          GCNotificationStatus.NotApplicable);
       setting.SetValue("invalid value"); // invalid value
-      Assert.AreEqual(setting.GetValueOrDefault<GCNotificationStatus>(GCNotificationStatus.Succeeded), GCNotificationStatus.Succeeded);
+      Assert.AreEqual(
+          setting.GetValueOrDefault<GCNotificationStatus>(GCNotificationStatus.Succeeded),
+          GCNotificationStatus.Succeeded);
       setting.GetValueOrDefault<GCNotificationStatus>(GCNotificationStatus.Succeeded, true); // test setDef
       Assert.AreEqual(setting.GetValue(typeof(GCNotificationStatus)), GCNotificationStatus.Succeeded);
 
@@ -698,7 +694,7 @@ namespace Tests
       Assert.AreEqual(setting.GetValue(typeof(ulong)), 7654321);
     }
 
-    private static void TestWithFile(Configuration cfg, Action<string> action)
+    private static void TestWithFile(Action<string> action)
     {
       string filename = Path.GetTempFileName();
       try

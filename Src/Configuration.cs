@@ -211,7 +211,7 @@ namespace SharpConfig
         throw new ArgumentNullException(nameof(settingName));
       }
 
-      Section section = FindSection(sectionName);
+      var section = FindSection(sectionName);
 
       return section != null && section.Contains(settingName);
     }
@@ -248,7 +248,7 @@ namespace SharpConfig
           }
 
           // Write all settings.
-          foreach (Setting setting in section)
+          foreach (var setting in section)
           {
             sb.AppendLine(setting.ToString());
           }
@@ -268,7 +268,7 @@ namespace SharpConfig
         }
 
         // Now the rest.
-        foreach (Section section in _sections.Where(section => section != defaultSection))
+        foreach (var section in _sections.Where(section => section != defaultSection))
         {
           WriteSection(section);
         }
@@ -292,7 +292,8 @@ namespace SharpConfig
         throw new ArgumentNullException(nameof(converter));
       }
 
-      Type type = converter.ConvertibleType;
+      var type = converter.ConvertibleType;
+
       if (s_typeStringConverters.ContainsKey(type))
       {
         throw new InvalidOperationException($"A converter for type '{type.FullName}' is already registered.");
@@ -368,8 +369,8 @@ namespace SharpConfig
         throw new FileNotFoundException("Configuration file not found.", filename);
       }
 
-      return (encoding == null) ? LoadFromString(File.ReadAllText(filename))
-                                : LoadFromString(File.ReadAllText(filename, encoding));
+      return LoadFromString(
+          encoding == null ? File.ReadAllText(filename) : File.ReadAllText(filename, encoding));
     }
 
     /// <summary>
@@ -392,13 +393,10 @@ namespace SharpConfig
         throw new ArgumentNullException(nameof(stream));
       }
 
-      StreamReader reader = encoding == null ? new StreamReader(stream) : new StreamReader(stream, encoding);
-
-      string source;
-
-      using (reader) source = reader.ReadToEnd();
-
-      return LoadFromString(source);
+      using (var reader = encoding == null ? new StreamReader(stream) : new StreamReader(stream, encoding))
+      {
+        return LoadFromString(reader.ReadToEnd());
+      }
     }
 
     /// <summary>
@@ -438,7 +436,7 @@ namespace SharpConfig
         throw new ArgumentNullException(nameof(filename));
       }
 
-      using (FileStream stream = File.OpenRead(filename))
+      using (var stream = File.OpenRead(filename))
       {
         return LoadFromBinaryStream(stream, reader);
       }
@@ -580,7 +578,7 @@ namespace SharpConfig
     public static CultureInfo CultureInfo
     {
       get => s_cultureInfo;
-      set => s_cultureInfo = value ?? throw new ArgumentNullException("value");
+      set => s_cultureInfo = value ?? throw new ArgumentNullException(nameof(value));
     }
 
     /// <summary>
@@ -694,7 +692,7 @@ namespace SharpConfig
     {
       get
       {
-        Section section = FindSection(name);
+        var section = FindSection(name);
 
         if (section == null)
         {

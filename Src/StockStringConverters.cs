@@ -13,8 +13,7 @@ namespace SharpConfig
     {
       try
       {
-        TypeConverter converter = TypeDescriptor.GetConverter(value);
-        return converter.ConvertToString(null, Configuration.CultureInfo, value);
+        return TypeDescriptor.GetConverter(value).ConvertToString(null, Configuration.CultureInfo, value);
       }
       catch (Exception ex)
       {
@@ -22,12 +21,11 @@ namespace SharpConfig
       }
     }
 
-    public object ConvertFromString(string value, Type hint)
+    public static object ConvertFromString(string value, Type hint)
     {
       try
       {
-        TypeConverter converter = TypeDescriptor.GetConverter(hint);
-        return converter.ConvertFrom(null, Configuration.CultureInfo, value);
+        return TypeDescriptor.GetConverter(hint).ConvertFrom(null, Configuration.CultureInfo, value);
       }
       catch (Exception ex)
       {
@@ -39,7 +37,7 @@ namespace SharpConfig
 
     public object TryConvertFromString(string value, Type hint)
     {
-      // Just call ConvertFromString since implementation is already in a try-catch block.
+      // Just call ConvertFromString() since the implementation is already in a try-catch block.
       return ConvertFromString(value, hint);
     }
   }
@@ -209,7 +207,7 @@ namespace SharpConfig
       var indexOfLastDot = value.LastIndexOf('.');
       if (indexOfLastDot >= 0)
       {
-        value = value.Substring(indexOfLastDot + 1, value.Length - indexOfLastDot - 1).Trim();
+        value = value.Substring(indexOfLastDot + 1).Trim();
       }
 
       return value;

@@ -60,9 +60,9 @@ namespace SharpConfig
       }
 
       var section = new Section(name);
-      Type type = obj.GetType();
+      var type = obj.GetType();
 
-      foreach (PropertyInfo prop in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
+      foreach (var prop in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
       {
         if (!prop.CanRead || ShouldIgnoreMappingFor(prop))
         {
@@ -75,7 +75,7 @@ namespace SharpConfig
       }
 
       // Repeat for each public field.
-      foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.Public))
+      foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public))
       {
         if (ShouldIgnoreMappingFor(field))
         {
@@ -113,6 +113,7 @@ namespace SharpConfig
     {
       var obj = Activator.CreateInstance<T>();
       SetValuesTo(obj);
+
       return obj;
     }
 
@@ -145,6 +146,7 @@ namespace SharpConfig
 
       var obj = Activator.CreateInstance(type);
       SetValuesTo(obj);
+
       return obj;
     }
 
@@ -229,7 +231,7 @@ namespace SharpConfig
         throw new ArgumentNullException(nameof(obj));
       }
 
-      Type type = obj.GetType();
+      var type = obj.GetType();
 
       // Scan the type's properties.
       foreach (var prop in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
@@ -239,19 +241,21 @@ namespace SharpConfig
           continue;
         }
 
-        Setting setting = FindSetting(prop.Name);
+        var setting = FindSetting(prop.Name);
+
         if (setting == null)
         {
           continue;
         }
 
-        object value = prop.PropertyType.IsArray ? setting.GetValueArray(prop.PropertyType.GetElementType())
-                                                 : setting.GetValue(prop.PropertyType);
+        var value = prop.PropertyType.IsArray ? setting.GetValueArray(prop.PropertyType.GetElementType())
+                                              : setting.GetValue(prop.PropertyType);
 
         if (prop.PropertyType.IsArray)
         {
           var settingArray = value as Array;
           var propArray = prop.GetValue(obj, null) as Array;
+
           if (settingArray != null && (propArray == null || propArray.Length != settingArray.Length))
           {
             // (Re)create the property's array.
@@ -280,19 +284,21 @@ namespace SharpConfig
           continue;
         }
 
-        Setting setting = FindSetting(field.Name);
+        var setting = FindSetting(field.Name);
+
         if (setting == null)
         {
           continue;
         }
 
-        object value = field.FieldType.IsArray ? setting.GetValueArray(field.FieldType.GetElementType())
-                                               : setting.GetValue(field.FieldType);
+        var value = field.FieldType.IsArray ? setting.GetValueArray(field.FieldType.GetElementType())
+                                            : setting.GetValue(field.FieldType);
 
         if (field.FieldType.IsArray)
         {
           var settingArray = value as Array;
           var fieldArray = field.GetValue(obj) as Array;
+
           if (settingArray != null && (fieldArray == null || fieldArray.Length != settingArray.Length))
           {
             // (Re)create the field's array.
@@ -386,6 +392,7 @@ namespace SharpConfig
     {
       var setting = new Setting(settingName, settingValue);
       Add(setting);
+
       return setting;
     }
 
@@ -431,7 +438,9 @@ namespace SharpConfig
       }
 
       while (Remove(settingName))
-        ;
+      {
+        // Nothing to do.
+      }
     }
 
     /// <summary>
@@ -510,7 +519,8 @@ namespace SharpConfig
     {
       get
       {
-        Setting setting = FindSetting(name);
+        var setting = FindSetting(name);
+
         if (setting == null)
         {
           setting = new Setting(name);

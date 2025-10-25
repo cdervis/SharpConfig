@@ -310,8 +310,9 @@ namespace SharpConfig
 
     private int CalculateArraySize()
     {
-      int size = 0;
+      var size = 0;
       var enumerator = new SettingArrayEnumerator(RawValue, false);
+
       while (enumerator.Next())
       {
         ++size;
@@ -367,22 +368,24 @@ namespace SharpConfig
         throw CreateJaggedArraysNotSupportedEx(elementType);
       }
 
-      int myArraySize = this.ArraySize;
-      if (ArraySize < 0)
+      var myArraySize = this.ArraySize;
+
+      if (myArraySize < 0)
       {
         return null;
       }
 
-      object[] values = new object[myArraySize];
+      var values = new object[myArraySize];
 
       if (myArraySize > 0)
       {
         var enumerator = new SettingArrayEnumerator(RawValue, true);
-        int iElem = 0;
+        var elementIndex = 0;
+
         while (enumerator.Next())
         {
-          values[iElem] = CreateObjectFromString(enumerator.Current, elementType);
-          ++iElem;
+          values[elementIndex] = CreateObjectFromString(enumerator.Current, elementType);
+          ++elementIndex;
         }
       }
 
@@ -400,7 +403,7 @@ namespace SharpConfig
     /// array.</exception>
     public T GetValue<T>()
     {
-      Type type = typeof(T);
+      var type = typeof(T);
 
       if (type.IsArray)
       {
@@ -428,14 +431,15 @@ namespace SharpConfig
     /// <returns>The values of this setting as an array.</returns>
     public T[] GetValueArray<T>()
     {
-      Type type = typeof(T);
+      var type = typeof(T);
 
       if (type.IsArray)
       {
         throw CreateJaggedArraysNotSupportedEx(type);
       }
 
-      int myArraySize = ArraySize;
+      var myArraySize = ArraySize;
+
       if (myArraySize < 0)
       {
         return null;
@@ -446,11 +450,12 @@ namespace SharpConfig
       if (myArraySize > 0)
       {
         var enumerator = new SettingArrayEnumerator(RawValue, true);
-        int iElem = 0;
+        var elementIndex = 0;
+
         while (enumerator.Next())
         {
-          values[iElem] = (T)CreateObjectFromString(enumerator.Current, type);
-          ++iElem;
+          values[elementIndex] = (T)CreateObjectFromString(enumerator.Current, type);
+          ++elementIndex;
         }
       }
 
@@ -471,7 +476,7 @@ namespace SharpConfig
     /// <typeparam name="T">The type of the object to retrieve.</typeparam>
     public T GetValueOrDefault<T>(T defaultValue, bool setDefault = false)
     {
-      Type type = typeof(T);
+      var type = typeof(T);
 
       if (type.IsArray)
       {
@@ -502,7 +507,8 @@ namespace SharpConfig
     // Converts the value of a single element to a desired type.
     private static object CreateObjectFromString(string value, Type dstType, bool tryConvert = false)
     {
-      Type underlyingType = Nullable.GetUnderlyingType(dstType);
+      var underlyingType = Nullable.GetUnderlyingType(dstType);
+
       if (underlyingType != null)
       {
         if (string.IsNullOrEmpty(value))
@@ -515,9 +521,8 @@ namespace SharpConfig
         dstType = underlyingType;
       }
 
-      ITypeStringConverter converter = Configuration.FindTypeStringConverter(dstType);
-
-      object obj = converter.TryConvertFromString(value, dstType);
+      var converter = Configuration.FindTypeStringConverter(dstType);
+      var obj = converter.TryConvertFromString(value, dstType);
 
       if (obj == null && !tryConvert)
       {
@@ -540,24 +545,28 @@ namespace SharpConfig
         return;
       }
 
-      Type type = value.GetType();
+      var type = value.GetType();
+
       if (type.IsArray)
       {
-        Type elementType = type.GetElementType();
+        var elementType = type.GetElementType();
+
         if (elementType != null && elementType.IsArray)
         {
           throw CreateJaggedArraysNotSupportedEx(type.GetElementType());
         }
 
         var values = value as Array;
+
         if (values != null)
         {
-          string[] strings = new string[values.Length];
+          var strings = new string[values.Length];
 
           for (int i = 0; i < values.Length; i++)
           {
-            object elemValue = values.GetValue(i);
-            ITypeStringConverter converter = Configuration.FindTypeStringConverter(elemValue.GetType());
+            var elemValue = values.GetValue(i);
+            var converter = Configuration.FindTypeStringConverter(elemValue.GetType());
+
             strings[i] = GetValueForOutput(converter.ConvertToString(elemValue));
           }
 
@@ -573,7 +582,7 @@ namespace SharpConfig
       }
       else
       {
-        ITypeStringConverter converter = Configuration.FindTypeStringConverter(type);
+        var converter = Configuration.FindTypeStringConverter(type);
         RawValue = converter.ConvertToString(value);
         _shouldCalculateArraySize = true;
       }
@@ -626,7 +635,8 @@ namespace SharpConfig
     private static ArgumentException CreateJaggedArraysNotSupportedEx(Type type)
     {
       // Determine the underlying element type.
-      Type elementType = type.GetElementType();
+      var elementType = type.GetElementType();
+
       while (elementType != null && elementType.IsArray)
       {
         elementType = elementType.GetElementType();
