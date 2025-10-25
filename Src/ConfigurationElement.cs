@@ -82,7 +82,7 @@ namespace SharpConfig
         comment = comment.Substring(0, newLineIndex);
       }
 
-      return Configuration.PreferredCommentChar + ' ' + comment;
+      return Configuration.PreferredCommentChar + " " + comment;
     }
 
     // Gets a formatted pre-comment string that is ready
@@ -92,7 +92,7 @@ namespace SharpConfig
       var lines = PreComment.Split(formattedPreCommentSeparator, StringSplitOptions.None);
 
       return string.Join(
-          Environment.NewLine, Array.ConvertAll(lines, s => Configuration.PreferredCommentChar + ' ' + s));
+          Environment.NewLine, Array.ConvertAll(lines, s => Configuration.PreferredCommentChar + " " + s));
     }
 
     /// <summary>
