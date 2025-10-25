@@ -7,6 +7,7 @@
 **Easy to use cfg / ini configuration library for .NET.**
 
 You can use SharpConfig to read, modify and save configuration files and streams, in either text or binary format.
+
 Minimalistic, fully portable ([.NET Standard 2.0](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-2-0#select-net-standard-version)), zero package dependencies.
 
 [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://dervis.de/sharpconfig)
@@ -26,5 +27,5 @@ Install via:
 
 ## Documentation
 
-The documentation is available on the [home page](https://dervis.de/sharpconfig).
+The documentation is available on the [website](https://dervis.de/sharpconfig).
 
