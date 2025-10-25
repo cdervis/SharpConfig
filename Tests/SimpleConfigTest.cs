@@ -189,18 +189,25 @@ namespace Tests
     [Test]
     public void SaveAndLoadComments()
     {
+      // clang-format off
       var cfgStr =
-          "# Line1" + Environment.NewLine + "; Line2" + Environment.NewLine + "#" + Environment.NewLine +
-          "# Line4" + Environment.NewLine + "[Section] # InlineComment1" + Environment.NewLine +
-          "Setting = Value ; InlineComment2" + Environment.NewLine + Environment.NewLine + "# Line1   " +
-          Environment.NewLine + "#Line2 " + Environment.NewLine + "## ###" + Environment.NewLine + ";Line4" +
-          Environment.NewLine + "[Section2]" + Environment.NewLine + "Setting=\"Val;#ue\"# InlineComment3" +
-          Environment.NewLine +
-          "ValidUglySetting1 = \"this is # not a comment\" # this is a comment \"with a quote\" inside" +
-          Environment.NewLine + "ValidUglySetting2 = this is \\# not a comment # this is a comment" +
-          Environment.NewLine +
-          ("ValidUglySetting3 = { first, \"second # still, second\" } # comment \"with a quote\" and a " +
-           "closing brace }");
+        "# Line1" + Environment.NewLine +
+        "; Line2" + Environment.NewLine +
+        "#" + Environment.NewLine +
+        "# Line4" + Environment.NewLine +
+        "[Section] # InlineComment1" + Environment.NewLine +
+        "Setting = Value ; InlineComment2" + Environment.NewLine +
+        Environment.NewLine +
+        "# Line1   " + Environment.NewLine +
+        "#Line2 " + Environment.NewLine +
+        "## ###" + Environment.NewLine +
+        ";Line4" + Environment.NewLine +
+        "[Section2]" + Environment.NewLine +
+        "Setting=\"Val;#ue\"# InlineComment3" + Environment.NewLine +
+        "ValidUglySetting1 = \"this is # not a comment\" # this is a comment \"with a quote\" inside" + Environment.NewLine +
+        "ValidUglySetting2 = this is \\# not a comment # this is a comment" + Environment.NewLine +
+        "ValidUglySetting3 = { first, \"second # still, second\" } # comment \"with a quote\" and a closing brace }";
+      // clang-format on
 
       var cfg = Configuration.LoadFromString(cfgStr);
 
