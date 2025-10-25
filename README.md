@@ -61,8 +61,6 @@ var person = config["Person"].ToObject<Person>();
 // ...
 ```
 
----
-
 ## Documentation
 
 The full documentation is available on the [website](https://sharpconfig.org).
