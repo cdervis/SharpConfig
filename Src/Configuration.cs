@@ -220,62 +220,8 @@ namespace SharpConfig
     /// Gets the string representation of the configuration. It represents the same contents
     /// as if the configuration was saved to a file or stream.
     /// </summary>
-    public string StringRepresentation
-    {
-      get {
-        var sb = new StringBuilder();
-
-        // Write all sections.
-        bool isFirstSection = true;
-
-        void WriteSection(Section section)
-        {
-          if (!isFirstSection)
-          {
-            sb.AppendLine();
-          }
-
-          // Leave some space between this section and the element that is above,
-          // if this section has pre-comments and isn't the first section in the configuration.
-          if (!isFirstSection && section.PreComment != null)
-          {
-            sb.AppendLine();
-          }
-
-          if (section.Name != Section.DefaultSectionName)
-          {
-            sb.AppendLine(section.ToString());
-          }
-
-          // Write all settings.
-          foreach (var setting in section)
-          {
-            sb.AppendLine(setting.ToString());
-          }
-
-          if (section.Name != Section.DefaultSectionName || section.SettingCount > 0)
-          {
-            isFirstSection = false;
-          }
-        }
-
-        // Write the default section first.
-        Section defaultSection = DefaultSection;
-
-        if (defaultSection.SettingCount > 0)
-        {
-          WriteSection(DefaultSection);
-        }
-
-        // Now the rest.
-        foreach (var section in _sections.Where(section => section != defaultSection))
-        {
-          WriteSection(section);
-        }
-
-        return sb.ToString();
-      }
-    }
+    [Obsolete("Please use SaveToString() instead. This property will be removed starting in version 4.1.")]
+    public string StringRepresentation => SaveToString();
 
     /// <summary>
     /// Registers a type converter to be used for setting value conversions.
@@ -567,6 +513,64 @@ namespace SharpConfig
       }
 
       ConfigurationWriter.WriteToStreamBinary(this, stream, writer);
+    }
+
+    /// <summary>
+    /// Saves the configuration to a string.
+    /// </summary>
+    public string SaveToString()
+    {
+      var sb = new StringBuilder();
+
+      // Write all sections.
+      bool isFirstSection = true;
+
+      void WriteSection(Section section)
+      {
+        if (!isFirstSection)
+        {
+          sb.AppendLine();
+        }
+
+        // Leave some space between this section and the element that is above,
+        // if this section has pre-comments and isn't the first section in the configuration.
+        if (!isFirstSection && section.PreComment != null)
+        {
+          sb.AppendLine();
+        }
+
+        if (section.Name != Section.DefaultSectionName)
+        {
+          sb.AppendLine(section.ToString());
+        }
+
+        // Write all settings.
+        foreach (var setting in section)
+        {
+          sb.AppendLine(setting.ToString());
+        }
+
+        if (section.Name != Section.DefaultSectionName || section.SettingCount > 0)
+        {
+          isFirstSection = false;
+        }
+      }
+
+      // Write the default section first.
+      var defaultSection = DefaultSection;
+
+      if (defaultSection.SettingCount > 0)
+      {
+        WriteSection(DefaultSection);
+      }
+
+      // Now the rest.
+      foreach (var section in _sections.Where(section => section != defaultSection))
+      {
+        WriteSection(section);
+      }
+
+      return sb.ToString();
     }
 
     /// <summary>

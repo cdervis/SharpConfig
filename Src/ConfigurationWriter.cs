@@ -42,7 +42,7 @@ namespace SharpConfig
         encoding = Encoding.UTF8;
       }
 
-      var str = cfg.StringRepresentation;
+      var str = cfg.SaveToString();
 
       // Encode & write the string.
       var byteBuffer = new byte[encoding.GetByteCount(str)];
