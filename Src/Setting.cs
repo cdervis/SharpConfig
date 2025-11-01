@@ -42,24 +42,6 @@ namespace SharpConfig
     public bool IsEmpty => string.IsNullOrEmpty(RawValue);
 
     /// <summary>
-    /// Gets the value of this setting as a <see cref="string"/>, with quotes removed if present.
-    /// </summary>
-    [Obsolete("Use StringValue instead")]
-    public string StringValueTrimmed
-    {
-      get {
-        string value = StringValue;
-
-        if (value[0] == '\"')
-        {
-          value = value.Trim('\"');
-        }
-
-        return value;
-      }
-    }
-
-    /// <summary>
     /// Gets or sets the raw value of this setting.
     /// </summary>
     public string RawValue { get; set; } = string.Empty;
