@@ -8,7 +8,7 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <AssemblyVersion>4.0</AssemblyVersion>
     <FileVersion>4.0</FileVersion>
-    <PackageIcon>logo256.png</PackageIcon>
+    <PackageIcon>logo.png</PackageIcon>
     <Version>4.0</Version>
     <Authors>Cem Dervis</Authors>
     <PackageProjectUrl>https://sharpconfig.org</PackageProjectUrl>
@@ -43,10 +43,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\Docs\assets\images\logo256.png">
+    <None Include="..\docs\assets\logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
-      <Link>logo256.png</Link>
+      <Link>logo.png</Link>
     </None>
     <None Include="..\README.md">
       <Pack>True</Pack>
