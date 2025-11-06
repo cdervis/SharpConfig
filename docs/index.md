@@ -3,7 +3,7 @@ title: Home
 ---
 
 <div class="main-title-container">
-  <img src="assets/images/logo256.webp" alt="logo" />
+  <img src="assets/logo.png" alt="logo" />
   <h1>SharpConfig</h1>
 </div>
 
@@ -128,14 +128,14 @@ The following properties are available:
 
 | Option | Type | Description |
 |--------|------|-------------|
-| `CultureInfo` | `CultureInfo` | Gets or sets the `CultureInfo` that is used for value conversion in SharpConfig. <br/> The default value is `CultureInfo.InvariantCulture`. |
-| `ValidCommentChars` | `char[]` | Gets the array that contains all valid comment delimiting characters. <br/> The default value is `{ '#', ';' }` |
-| `PreferredCommentChar` | `char` | Gets or sets the preferred comment char when saving configurations. <br/> The default value is `'#'`. |
-| `ArrayElementSeparator` | `char` | Gets or sets the array element separator character for settings. <br/> The default value is `','`. <br/> Remember that after you change this value while `Setting` instances exist, to expect their `ArraySize` and other array-related values to return different values. |
-| `IgnoreInlineComments` | `bool` | Gets or sets a value indicating whether inline comments should be ignored **when parsing a configuration**. |
-| `IgnorePreComments` | `bool` | Gets or sets a value indicating whether pre-comments should be ignored **when parsing a configuration**. |
-| `SpaceBetweenEquals` | `bool` | Gets or sets a value indicating whether space between equals should be added **when saving a configuration**. |
-| `OutputRawStringLiterals` | `bool` | Gets or sets a value indicating whether string values are written without quotes, but including everything in between. <br/> For example, a setting `MySetting=" Example value"` would be written to a file as `MySetting= Example value`.
+| **`CultureInfo`** | `CultureInfo` | Gets or sets the `CultureInfo` that is used for value conversion in SharpConfig. <br/> The default value is `CultureInfo.InvariantCulture`. |
+| **`ValidCommentChars`** | `#!csharp char[]` | Gets the array that contains all valid comment delimiting characters. <br/> The default value is `{ '#', ';' }` |
+| **`PreferredCommentChar`** | `#!csharp char` | Gets or sets the preferred comment char when saving configurations. <br/> The default value is `'#'`. |
+| **`ArrayElementSeparator`** | `#!csharp char` | Gets or sets the array element separator character for settings. <br/> The default value is `','`. <br/> Remember that after you change this value while `Setting` instances exist, to expect their `ArraySize` and other array-related values to return different values. |
+| **`IgnoreInlineComments`** | `#!csharp bool` | Gets or sets a value indicating whether inline comments should be ignored **when parsing a configuration**. |
+| **`IgnorePreComments`** | `#!csharp bool` | Gets or sets a value indicating whether pre-comments should be ignored **when parsing a configuration**. |
+| **`SpaceBetweenEquals`** | `#!csharp bool` | Gets or sets a value indicating whether space between equals should be added **when saving a configuration**. |
+| **`OutputRawStringLiterals`** | `#!csharp bool` | Gets or sets a value indicating whether string values are written without quotes, but including everything in between. <br/> For example, a setting `MySetting=" Example value"` would be written to a file as `MySetting= Example value`.
 
 ## Ignoring properties, fields and types
 
@@ -152,8 +152,10 @@ class SomeClass
 }
 ```
 
-SharpConfig will now ignore the `SomeInt` property when creating sections from objects of type `SomeClass` and vice versa. Now suppose you have a type in your project that should always be ignored.
-You would have to mark every property that returns this type with a `[SharpConfig.Ignore]` attribute. An easier solution is to just apply the `[SharpConfig.Ignore]` attribute to the type.
+SharpConfig will now ignore the `SomeInt` property when creating sections from objects of type `SomeClass` and vice versa.
+Now suppose you have a type in your project that should always be ignored.
+You would have to mark every property that returns this type with a `#!csharp [SharpConfig.Ignore]` attribute.
+An easier solution is to just apply the `#!csharp [SharpConfig.Ignore]` attribute to the type.
 
 ```csharp title="Example" linenums="1"
 [SharpConfig.Ignore]
@@ -180,9 +182,8 @@ class SomeClass
 }
 ```
 
-::: callout info
-This ignoring mechanism works the same way for public fields.
-:::
+!!! info
+    This ignoring mechanism works the same way for public fields.
 
 ## Adding custom object converters
 
@@ -236,6 +237,6 @@ Configuration.RegisterTypeStringConverter(new PersonStringConverter());
 
 That's it!
 
-Whenever a `Person` object is used on a `Setting` (via `GetValue()` and `SetValue()`),
+Whenever a `Person` object is used on a `Setting` (via `#!csharp GetValue()` and `#!csharp SetValue()`),
 your converter is selected to take care of the conversion.
-This also automatically works with `SetValue()` for arrays and `GetValueArray()`.
+This also automatically works with `#!csharp SetValue()` for arrays and `#!csharp GetValueArray()`.

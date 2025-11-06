@@ -1,0 +1,14 @@
+.main-title-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.main-title-container img {
+    width: 42px;
+    height: 42px;
+}
+
+.main-title-container h1 {
+    margin: auto 0;
+}

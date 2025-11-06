@@ -4,3 +4,6 @@ obj/
 .DS_Store
 .idea/
 *.user
+.qtcreator/
+.vscode/
+.vs/
