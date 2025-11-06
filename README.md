@@ -2,7 +2,7 @@
 
 # SharpConfig
 
-<p><img title="Polly logo" src="Docs/assets/images/logo.svg" width="130" height="130"></p>
+<p><img title="Polly logo" src="docs/assets/logo.svg" width="130" height="130"></p>
 
 **Easy to use cfg / ini configuration library for .NET.**
 
