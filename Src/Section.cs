@@ -421,7 +421,15 @@ namespace SharpConfig
     /// </summary>
     /// <param name="setting">The setting to remove.</param>
     /// <returns>True if the setting was removed; false otherwise.</returns>
-    public bool Remove(Setting setting) => _settings.Remove(setting);
+    public bool Remove(Setting setting)
+    {
+      if (setting == null)
+      {
+        throw new ArgumentNullException(nameof(setting));
+      }
+
+      return _settings.Remove(setting);
+    }
 
     /// <summary>
     /// Removes all settings that have a specific name.
