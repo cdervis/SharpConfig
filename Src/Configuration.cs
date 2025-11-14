@@ -30,14 +30,7 @@ namespace SharpConfig
 
     static Configuration()
     {
-      // For now, clone the invariant culture so that the
-      // deprecated DateTimeFormat/NumberFormat properties still work,
-      // but without modifying the real invariant culture instance.
-      s_cultureInfo = (CultureInfo)CultureInfo.InvariantCulture.Clone();
-
-      ValidCommentChars = new HashSet<char> { '#', ';' };
-      s_preferredCommentChar = '#';
-      s_arrayElementSeparator = ',';
+      ResetOptions();
 
       FallbackConverter = new FallbackStringConverter();
 
@@ -60,11 +53,6 @@ namespace SharpConfig
         { typeof(uint), new UInt32StringConverter() },
         { typeof(ulong), new UInt64StringConverter() },
       };
-
-      IgnoreInlineComments = false;
-      IgnorePreComments = false;
-      SpaceBetweenEquals = false;
-      OutputRawStringValues = false;
     }
 
     /// <summary>
@@ -659,6 +647,25 @@ namespace SharpConfig
     /// equals should be added when creating a configuration.
     /// </summary>
     public static bool SpaceBetweenEquals { get; set; }
+
+    /// <summary>
+    /// Resets all global configuration options to their defaults.
+    /// </summary>
+    public static void ResetOptions()
+    {
+      // For now, clone the invariant culture so that the
+      // deprecated DateTimeFormat/NumberFormat properties still work,
+      // but without modifying the real invariant culture instance.
+      s_cultureInfo = (CultureInfo)CultureInfo.InvariantCulture.Clone();
+
+      ValidCommentChars = new HashSet<char> { '#', ';' };
+      s_preferredCommentChar = '#';
+      s_arrayElementSeparator = ',';
+      OutputRawStringValues = false;
+      IgnoreInlineComments = false;
+      IgnorePreComments = false;
+      SpaceBetweenEquals = false;
+    }
 
     /// <summary>
     /// Gets the number of sections that are in the configuration.
