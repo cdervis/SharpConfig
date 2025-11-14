@@ -56,7 +56,7 @@ namespace SharpConfig
         }
 
         var lineWithoutComment = line;
-        if (commentIndex > 0)
+        if (!Configuration.IgnoreInlineComments && commentIndex > 0)
         {
           lineWithoutComment = line.Remove(commentIndex).Trim(); // remove inline comment
         }
