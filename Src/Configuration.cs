@@ -586,7 +586,7 @@ namespace SharpConfig
 
     /// <summary>
     /// Gets the array that contains all valid comment delimiting characters.
-    /// The current value is { '#', ';' }.
+    /// The default value is { '#', ';' }.
     /// </summary>
     public static HashSet<char> ValidCommentChars { get; private set; }
 
@@ -599,7 +599,8 @@ namespace SharpConfig
     public static char PreferredCommentChar
     {
       get => s_preferredCommentChar;
-      set {
+      set
+      {
         if (!ValidCommentChars.Contains(value))
         {
           throw new ArgumentException("The specified char '" + value + "' is not allowed as a comment char.");
@@ -620,7 +621,8 @@ namespace SharpConfig
     public static char ArrayElementSeparator
     {
       get => s_arrayElementSeparator;
-      set {
+      set
+      {
         if (value == '\0')
         {
           throw new ArgumentException("Zero-character is not allowed.");

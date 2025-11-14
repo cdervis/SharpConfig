@@ -5,11 +5,11 @@ using SharpConfig;
 
 class SomeClass
 {
-  public string SomeString { get; set; }
+  public string? SomeString { get; set; }
 
   public int SomeInt { get; set; }
 
-  public int[] SomeInts { get; set; }
+  public int[]? SomeInts { get; set; }
 
   public DateTime SomeDate { get; set; }
 
@@ -68,9 +68,9 @@ internal static class Program
     // as long as the string value of the setting can be converted to the type you wish to obtain.
     string nameValue = cfg["SomeStructure"]["SomeString"].StringValue;
 
-    int ageValue = cfg["SomeStructure"]["SomeInt"].IntValue;
+    var ageValue = cfg["SomeStructure"]["SomeInt"].IntValue;
 
-    DateTime dateValue = cfg["SomeStructure"]["SomeDate"].DateTimeValue;
+    var dateValue = cfg["SomeStructure"]["SomeDate"].DateTimeValue;
 
     // Print our config just to see that it works.
     PrintConfig(cfg);
@@ -113,7 +113,7 @@ internal static class Program
     // Test.
     Console.WriteLine("SomeString:   " + p.SomeString);
     Console.WriteLine("SomeInt:      " + p.SomeInt);
-    PrintArray("SomeInts", p.SomeInts);
+    PrintArray("SomeInts", p.SomeInts!);
     Console.WriteLine("SomeDate:     " + p.SomeDate);
   }
 
