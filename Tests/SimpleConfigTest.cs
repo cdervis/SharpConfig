@@ -713,6 +713,32 @@ namespace Tests
       Assert.AreEqual(setting.GetValue(typeof(ulong)), 7654321);
     }
 
+    [Test]
+    public void TestCommentsInSectionNames()
+    {
+      var previous = Configuration.IgnoreInlineComments;
+      Configuration.IgnoreInlineComments = true;
+
+      var cfg = new Configuration();
+      cfg.Add("SomeSection1#NotAComment");
+      cfg.Add(new Section("SomeSection2# also part of the section's name"));
+
+      cfg["SomeSection1#NotAComment"].Add("Setting", 1);
+      cfg["SomeSection2# also part of the section's name"].Add("Setting", 2);
+
+      TestWithFile(filename =>
+      {
+        cfg.SaveToFile(filename);
+
+        var parsedCfg = Configuration.LoadFromFile(filename);
+
+        Assert.AreEqual("SomeSection1#NotAComment", parsedCfg[0].Name);
+        Assert.AreEqual("SomeSection2# also part of the section's name", parsedCfg[1].Name);
+      });
+
+      Configuration.IgnoreInlineComments = previous;
+    }
+
     private static void TestWithFile(Action<string> action)
     {
       string filename = Path.GetTempFileName();
