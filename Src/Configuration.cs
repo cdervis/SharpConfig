@@ -259,8 +259,19 @@ namespace SharpConfig
       s_typeStringConverters.Remove(type);
     }
 
-    internal static ITypeStringConverter FindTypeStringConverter(Type type)
+    /// <summary>
+    /// Looks up a registered type converter for a specific type.
+    /// </summary>
+    /// <param name="type">The type whose converter to look up.</param>
+    /// <returns>A reference to the registered converter, if found; null otherwise.</returns>
+    /// <exception cref="ArgumentNullException">When <paramref name="type"/>is null.</exception>
+    public static ITypeStringConverter FindTypeStringConverter(Type type)
     {
+      if (type == null)
+      {
+        throw new ArgumentNullException(nameof(type));
+      }
+
       if (type.IsEnum)
       {
         type = typeof(Enum);
