@@ -3,15 +3,15 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>An easy to use cfg/ini configuration library for .NET.</Description>
-    <Copyright>Copyright 2013-2025 Cemalettin Dervis</Copyright>
+    <Copyright>Copyright 2013-2025 Cem Dervis</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <AssemblyVersion>4.0</AssemblyVersion>
     <FileVersion>4.0</FileVersion>
-    <PackageIcon>logo256.png</PackageIcon>
+    <PackageIcon>logo.png</PackageIcon>
     <Version>4.0</Version>
-    <Authors>Cemalettin Dervis</Authors>
-    <PackageProjectUrl>https://github.com/cemdervis/SharpConfig</PackageProjectUrl>
+    <Authors>Cem Dervis</Authors>
+    <PackageProjectUrl>https://sharpconfig.org</PackageProjectUrl>
     <RepositoryUrl>https://github.com/cdervis/SharpConfig</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>sharpconfig config c# csharp cfg ini configuration library settings</PackageTags>
@@ -43,15 +43,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\Docs\assets\images\logo256.png">
+    <None Include="..\docs\assets\logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
-      <Link>logo256.png</Link>
+      <Link>logo.png</Link>
     </None>
     <None Include="..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Tests</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
 
 </Project>

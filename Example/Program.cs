@@ -1,15 +1,15 @@
-﻿// Copyright (c) 2013-2022 Cemalettin Dervis, MIT License.
-// https://github.com/cemdervis/SharpConfig
+﻿// Copyright (c) 2013-2025 Cem Dervis, MIT License.
+// https://sharpconfig.org
 
 using SharpConfig;
 
 class SomeClass
 {
-  public string SomeString { get; set; }
+  public string? SomeString { get; set; }
 
   public int SomeInt { get; set; }
 
-  public int[] SomeInts { get; set; }
+  public int[]? SomeInts { get; set; }
 
   public DateTime SomeDate { get; set; }
 
@@ -31,12 +31,11 @@ internal static class Program
 
     // HowToLoadAConfig();
     // HowToCreateAConfig();
-    // HowToSaveAConfig(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "TestCfg.ini"));
+    // HowToSaveAConfig(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+    // "TestCfg.ini"));
     // HowToCreateObjectsFromSections();
     // HowToCreateSectionsFromObjects();
     // HowToHandleArrays();
-
-    Console.ReadLine();
   }
 
   /// <summary>
@@ -47,7 +46,7 @@ internal static class Program
   private static void HowToLoadAConfig()
   {
     // Read our example config.
-    Configuration cfg = Configuration.LoadFromFile("SampleCfg.txt");
+    var cfg = Configuration.LoadFromFile("SampleCfg.txt");
 
     // Just print all sections and their settings.
     PrintConfig(cfg);
@@ -69,9 +68,9 @@ internal static class Program
     // as long as the string value of the setting can be converted to the type you wish to obtain.
     string nameValue = cfg["SomeStructure"]["SomeString"].StringValue;
 
-    int ageValue = cfg["SomeStructure"]["SomeInt"].IntValue;
+    var ageValue = cfg["SomeStructure"]["SomeInt"].IntValue;
 
-    DateTime dateValue = cfg["SomeStructure"]["SomeDate"].DateTimeValue;
+    var dateValue = cfg["SomeStructure"]["SomeDate"].DateTimeValue;
 
     // Print our config just to see that it works.
     PrintConfig(cfg);
@@ -114,7 +113,7 @@ internal static class Program
     // Test.
     Console.WriteLine("SomeString:   " + p.SomeString);
     Console.WriteLine("SomeInt:      " + p.SomeInt);
-    PrintArray("SomeInts", p.SomeInts);
+    PrintArray("SomeInts", p.SomeInts!);
     Console.WriteLine("SomeDate:     " + p.SomeDate);
   }
 
@@ -126,12 +125,11 @@ internal static class Program
     var cfg = new Configuration();
 
     // Create an object.
-    var p = new SomeClass
-    {
+    var p = new SomeClass {
       SomeString = "foobar",
       SomeInt = 2000,
       SomeInts = new[] { 1, 2, 3 },
-      SomeDate = DateTime.Now
+      SomeDate = DateTime.Now,
     };
 
     // Now create a section from it.
@@ -151,12 +149,12 @@ internal static class Program
     cfg["GeneralSection"]["SomeInts"].IntValueArray = new[] { 1, 2, 3 };
 
     // Get the array back.
-    int[] someIntValuesBack = cfg["GeneralSection"]["SomeInts"].GetValueArray<int>();
-    float[] sameValuesButFloats = cfg["GeneralSection"]["SomeInts"].GetValueArray<float>();
-    string[] sameValuesButStrings = cfg["GeneralSection"]["SomeInts"].GetValueArray<string>();
+    var someIntValuesBack = cfg["GeneralSection"]["SomeInts"].GetValueArray<int>();
+    var sameValuesButFloats = cfg["GeneralSection"]["SomeInts"].GetValueArray<float>();
+    var sameValuesButStrings = cfg["GeneralSection"]["SomeInts"].GetValueArray<string>();
 
     // There is also a non-generic variant of GetValueArray:
-    object[] sameValuesButObjects = cfg["GeneralSection"]["SomeInts"].GetValueArray(typeof(int));
+    var sameValuesButObjects = cfg["GeneralSection"]["SomeInts"].GetValueArray(typeof(int));
 
     PrintArray("someIntValuesBack", someIntValuesBack);
     PrintArray("sameValuesButFloats", sameValuesButFloats);
@@ -170,7 +168,7 @@ internal static class Program
   /// <param name="cfg">The configuration to print.</param>
   private static void PrintConfig(Configuration cfg)
   {
-    foreach (Section section in cfg)
+    foreach (var section in cfg)
     {
       Console.WriteLine("[{0}]", section.Name);
 
@@ -179,7 +177,9 @@ internal static class Program
         Console.Write("  ");
 
         if (setting.IsArray)
+        {
           Console.Write("[Array, {0} elements] ", setting.ArraySize);
+        }
 
         Console.WriteLine(setting.ToString());
       }
@@ -194,7 +194,9 @@ internal static class Program
     Console.Write(arrName + " = { ");
 
     for (int i = 0; i < arr.Count - 1; i++)
+    {
       Console.Write(arr[i] + ", ");
+    }
 
     Console.Write(arr[^1]!.ToString());
     Console.WriteLine(" }");

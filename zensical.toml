@@ -1,0 +1,65 @@
+[project]
+site_name = "SharpConfig"
+site_description = "SharpConfig is an easy to use cfg/ini configuration library for .NET."
+site_author = "Cem Dervis"
+site_url = "https://sharpconfig.org"
+repo_url = "https://github.com/cdervis/SharpConfig"
+repo_name = "cdervis/SharpConfig"
+
+copyright = """
+Copyright &copy; 2025 <a href="https://dervis.de">Cem Dervis</a>
+"""
+
+extra_css = [
+    "stylesheets/extra.css",
+]
+
+nav = [
+  { "Home" = "index.md" },
+  { "License" = "license.md" },
+]
+
+[project.theme]
+
+favicon = "assets/favicon.ico"
+logo = "assets/logo.png"
+language = "en"
+
+features = [
+    "announce.dismiss",
+    "content.code.annotate",
+    "content.code.copy",
+    "content.footnote.tooltips",
+    "content.tabs.link",
+    "content.tooltips",
+    "navigation.instant",
+    "navigation.instant.prefetch",
+    "navigation.instant.progress",
+    "navigation.path",
+    "navigation.sections",
+    "navigation.top",
+    "navigation.tabs",
+    "navigation.tracking",
+    "search.highlight",
+]
+
+[[project.theme.palette]]
+scheme = "default"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+scheme = "slate"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to light mode"
+
+[project.theme.font]
+text = "Funnel Sans"
+code = "Jetbrains Mono"
+
+[project.theme.icon]
+repo = "lucide/github"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/cdervis/SharpConfig"

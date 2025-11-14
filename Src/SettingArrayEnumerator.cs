@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2013-2022 Cemalettin Dervis, MIT License.
-// https://github.com/cemdervis/SharpConfig
+﻿// Copyright (c) 2013-2025 Cem Dervis, MIT License.
+// https://sharpconfig.org
 
 namespace SharpConfig
 {
@@ -26,7 +26,8 @@ namespace SharpConfig
 
       for (int i = 0; i < value.Length; ++i)
       {
-        char ch = value[i];
+        var ch = value[i];
+
         if (ch != ' ' && ch != '{')
         {
           break;
@@ -53,9 +54,10 @@ namespace SharpConfig
       }
 
       // See where the last valid '}' is.
-      for (int i = value.Length - 1; i >= 0; --i)
+      for (var i = value.Length - 1; i >= 0; --i)
       {
-        char ch = value[i];
+        var ch = value[i];
+
         if (ch != ' ' && ch != '}')
         {
           break;
@@ -81,8 +83,7 @@ namespace SharpConfig
 
       // See if this is an empty array such as "{    }" or "{}".
       // If so, this is a valid array, but with size 0.
-      if (_idxInString == _lastRBraceIdx ||
-          !IsNonEmptyValue(_stringValue, _idxInString, _lastRBraceIdx))
+      if (_idxInString == _lastRBraceIdx || !IsNonEmptyValue(_stringValue, _idxInString, _lastRBraceIdx))
       {
         IsValid = true;
         _isDone = true;
@@ -92,12 +93,10 @@ namespace SharpConfig
 
     private void UpdateElementString(int idx)
     {
-      Current = _stringValue.Substring(
-        _prevElemIdxInString,
-        idx - _prevElemIdxInString
-        );
+      Current = _stringValue.Substring(_prevElemIdxInString, idx - _prevElemIdxInString);
 
-      Current = Current.Trim(' '); // trim spaces first
+      // Trim spaces first.
+      Current = Current.Trim(' ');
 
       // Now trim the quotes, but only the first and last, because
       // the setting value itself can contain quotes.
@@ -119,10 +118,12 @@ namespace SharpConfig
         return false;
       }
 
-      int idx = _idxInString;
+      var idx = _idxInString;
+
       while (idx <= _lastRBraceIdx)
       {
-        char ch = _stringValue[idx];
+        var ch = _stringValue[idx];
+
         if (ch == '{' && !_isInQuotes)
         {
           ++_braceBalance;
@@ -130,6 +131,7 @@ namespace SharpConfig
         else if (ch == '}' && !_isInQuotes)
         {
           --_braceBalance;
+
           if (idx == _lastRBraceIdx)
           {
             // This is the last element.
@@ -142,16 +144,19 @@ namespace SharpConfig
             {
               UpdateElementString(idx);
             }
+
             _isDone = true;
+
             break;
           }
         }
         else if (ch == '\"')
         {
-          int iNextQuoteMark = _stringValue.IndexOf('\"', idx + 1);
-          if (iNextQuoteMark > 0 && _stringValue[iNextQuoteMark - 1] != '\\')
+          var nextQuoteMarkIndex = _stringValue.IndexOf('\"', idx + 1);
+
+          if (nextQuoteMarkIndex > 0 && _stringValue[nextQuoteMarkIndex - 1] != '\\')
           {
-            idx = iNextQuoteMark;
+            idx = nextQuoteMarkIndex;
             _isInQuotes = false;
           }
           else
@@ -175,6 +180,7 @@ namespace SharpConfig
 
           // Yield.
           ++idx;
+
           break;
         }
 

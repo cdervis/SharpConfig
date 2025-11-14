@@ -3,7 +3,7 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageIcon>logo256.png</PackageIcon>
+    <PackageIcon>logo.png</PackageIcon>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>10</LangVersion>
@@ -17,10 +17,10 @@
     <None Update="SampleCfg.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\Docs\assets\images\logo256.png">
+    <None Include="..\docs\assets\logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
-      <Link>logo256.png</Link>
+      <Link>logo.png</Link>
     </None>
   </ItemGroup>
 
