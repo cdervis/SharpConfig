@@ -141,7 +141,7 @@ namespace SharpConfig
     {
       if (type == null)
       {
-        throw new ArgumentNullException(type.Name);
+        throw new ArgumentNullException(nameof(type));
       }
 
       var obj = Activator.CreateInstance(type);
