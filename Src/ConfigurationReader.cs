@@ -89,8 +89,8 @@ namespace SharpConfig
         }
         else // Setting
         {
-          var setting =
-              ParseSetting(Configuration.IgnoreInlineComments ? line : lineWithoutComment, lineNumber);
+          var setting = ParseSetting(
+              Configuration.IgnoreInlineComments ? line : lineWithoutComment, reader, ref lineNumber);
 
           if (!Configuration.IgnoreInlineComments)
           {
@@ -183,7 +183,7 @@ namespace SharpConfig
                                 : new Section(sectionName);
     }
 
-    private static Setting ParseSetting(string line, int lineNumber)
+    private static Setting ParseSetting(string line, StringReader reader, ref int lineNumber)
     {
       // Format(s) of a setting:
       // 1) <name> = <value>
@@ -238,6 +238,35 @@ namespace SharpConfig
       }
 
       var settingValue = line.Substring(equalSignIndex + 1).Trim();
+
+      // A setting value that only consists of a quote mark can indicate a multiline value.
+      // Read it until we encounter a line that consists of a single quote mark.
+      if (settingValue == "[[")
+      {
+        var settingValueBuffer = new StringBuilder();
+        settingValueBuffer.Append("[[");
+
+        while ((line = reader.ReadLine()) != null)
+        {
+          ++lineNumber;
+
+          if (line == "]]")
+          {
+            break;
+          }
+
+          settingValueBuffer.AppendLine(line);
+        }
+
+        if (settingValueBuffer.Length > 0 && settingValueBuffer[settingValueBuffer.Length - 1] == '\n')
+        {
+          settingValueBuffer.Remove(settingValueBuffer.Length - 1, 1);
+        }
+
+        settingValueBuffer.Append("]]");
+
+        settingValue = settingValueBuffer.ToString();
+      }
 
       return new Setting(settingName, settingValue);
     }
