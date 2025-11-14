@@ -1,0 +1,44 @@
+[Section]
+MultilineValue1=[[
+Line1
+Line2
+  Line3 (indented)
+"Line4 with quote at start
+Line5 with quote at end"
+Line6 with " in the middle
+Line7 with "" in the middle
+""
+]]
+
+SomeSetting=SomeValue
+
+MultlineValue2ButInASingleLine=[[This is one \n line, verbatim]]
+
+RegexPattern=[[
+IP\s*Address(?!s)
+[\s\S]{0,64}?
+(?<IP>
+    (?:
+        (?:\[)?
+        (?>
+            [23][A-Fa-f0-9]{3}
+            (?:
+                (?::[A-Fa-f0-9]{1,4}){1,7}
+                |
+                (?:(?::[A-Fa-f0-9]{1,4}){0,6}::(?:[A-Fa-f0-9]{1,4}(?::[A-Fa-f0-9]{1,4}){0,6})?)
+            )
+        )
+        (?:\])?
+        |
+        (?>
+            (?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\.){3}
+            (?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)
+        )
+    )
+)
+(?::\d+)?
+[\s\S]{0,64}?
+Time
+[\s\S]{0,64}?
+(?<Time>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\s+UTC)
+]]

@@ -16,4 +16,10 @@
     <ProjectReference Include="..\Src\SharpConfig.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="MultilineValuesTest.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

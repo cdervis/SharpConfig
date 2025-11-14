@@ -564,9 +564,21 @@ namespace Tests
     }
 
     [Test]
-    public void Regex()
+    public void MultilineValues()
     {
-      // var cfg = Configuration.LoadFromFile("RegexTest.txt");
+      var cfg = Configuration.LoadFromFile("MultilineValuesTest.txt");
+
+      var lines1 = cfg["Section"]["MultilineValue1"].RawValue.Split('\n');
+      Assert.AreEqual("[[Line1", lines1[0]);
+      Assert.AreEqual("Line2", lines1[1]);
+      Assert.AreEqual("  Line3 (indented)", lines1[2]);
+      Assert.AreEqual("\"Line4 with quote at start", lines1[3]);
+      Assert.AreEqual("Line5 with quote at end\"", lines1[4]);
+      Assert.AreEqual("Line6 with \" in the middle", lines1[5]);
+      Assert.AreEqual("Line7 with \"\" in the middle", lines1[6]);
+      Assert.AreEqual("\"\"]]", lines1[7]);
+
+      Assert.AreEqual("SomeValue", cfg["Section"]["SomeSetting"].StringValue);
     }
 
     [Test]
