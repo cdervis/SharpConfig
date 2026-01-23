@@ -17,7 +17,7 @@
     <None Update="SampleCfg.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\docs\assets\logo.png">
+    <None Include="..\logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
       <Link>logo.png</Link>

@@ -45,7 +45,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\docs\assets\logo.png">
+    <None Include="..\logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
       <Link>logo.png</Link>
