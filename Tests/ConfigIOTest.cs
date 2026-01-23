@@ -4,6 +4,8 @@
 using System.IO;
 using SharpConfig;
 using NUnit.Framework;
+using Assert = NUnit.Framework.Legacy.ClassicAssert;
+using FileAssert = NUnit.Framework.Legacy.FileAssert;
 
 namespace Tests
 {

@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Text;
 using NUnit.Framework;
+using Assert = NUnit.Framework.Legacy.ClassicAssert;
 using SharpConfig;
 
 namespace Tests

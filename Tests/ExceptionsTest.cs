@@ -3,6 +3,7 @@
 
 using System;
 using NUnit.Framework;
+using Assert = NUnit.Framework.Legacy.ClassicAssert;
 
 namespace SharpConfig
 {
