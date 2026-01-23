@@ -244,7 +244,9 @@ namespace SharpConfig
       if (settingValue == "[[")
       {
         var settingValueBuffer = new StringBuilder();
-        settingValueBuffer.Append("[[");
+        settingValueBuffer.AppendLine("[[");
+
+        bool foundClosing = false;
 
         while ((line = reader.ReadLine()) != null)
         {
@@ -252,15 +254,16 @@ namespace SharpConfig
 
           if (line == "]]")
           {
+            foundClosing = true;
             break;
           }
 
           settingValueBuffer.AppendLine(line);
         }
 
-        if (settingValueBuffer.Length > 0 && settingValueBuffer[settingValueBuffer.Length - 1] == '\n')
+        if (!foundClosing)
         {
-          settingValueBuffer.Remove(settingValueBuffer.Length - 1, 1);
+          throw new ParserException("Closing multiline tag ']]' expected.", lineNumber);
         }
 
         settingValueBuffer.Append("]]");
