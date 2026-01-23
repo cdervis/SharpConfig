@@ -203,13 +203,13 @@ namespace Tests
         private class TestObject
         {
             public int IntField;
-            public string StringProp { get; set; }
+            public string StringProp { get; set; } = string.Empty;
 
             [SharpConfig.Ignore]
             public int IgnoredField;
 
             [SharpConfig.Ignore]
-            public string IgnoredProp { get; set; }
+            public string IgnoredProp { get; set; } = string.Empty;
         }
     }
 }

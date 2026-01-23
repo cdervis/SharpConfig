@@ -156,7 +156,7 @@ namespace Tests
     private class MultilineTestObject
     {
       [Multiline]
-      public string MultilineValue { get; set; }
+      public string MultilineValue { get; set; } = string.Empty;
     }
 
     [Test]

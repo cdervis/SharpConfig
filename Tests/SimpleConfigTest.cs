@@ -75,8 +75,8 @@ namespace Tests
       Assert.AreEqual(cfg["TestSection"]["IntSetting2"].GetValue(typeof(int)), 200);
       Assert.AreEqual(cfg["TestSection"]["StringSetting1"].GetValue(typeof(string)), "Test");
 
-      var intsNonGeneric = cfg["TestSection"]["IntArray"].GetValueArray(typeof(int));
-      var intsGeneric = cfg["TestSection"]["IntArray"].GetValueArray<int>();
+      var intsNonGeneric = cfg["TestSection"]["IntArray"].GetValueArray(typeof(int))!;
+      var intsGeneric = cfg["TestSection"]["IntArray"].GetValueArray<int>()!;
 
       Assert.AreEqual(intsNonGeneric.Length, intsGeneric.Length);
       Assert.AreEqual(intsGeneric.Length, ints.Length);
@@ -173,8 +173,8 @@ namespace Tests
           { setting.GetValue(typeof(int)); });
 
       // Now get the array object and check.
-      var intsNonGeneric = setting.GetValueArray(typeof(int));
-      var intsGeneric = setting.GetValueArray<int>();
+      var intsNonGeneric = setting.GetValueArray(typeof(int))!;
+      var intsGeneric = setting.GetValueArray<int>()!;
 
       Assert.AreEqual(obj.Length, intsGeneric.Length);
       Assert.AreEqual(intsGeneric.Length, intsNonGeneric.Length);
