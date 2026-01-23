@@ -16,7 +16,9 @@ class SomeClass
   // This field will be ignored by SharpConfig
   // when creating sections from objects and vice versa.
   [SharpConfig.Ignore]
+#pragma warning disable CS0649 // Field is never assigned to
   public int SomeIgnoredField;
+#pragma warning restore CS0649
 
   // Same for this property.
   [SharpConfig.Ignore]
@@ -156,10 +158,10 @@ internal static class Program
     // There is also a non-generic variant of GetValueArray:
     var sameValuesButObjects = cfg["GeneralSection"]["SomeInts"].GetValueArray(typeof(int));
 
-    PrintArray("someIntValuesBack", someIntValuesBack);
-    PrintArray("sameValuesButFloats", sameValuesButFloats);
-    PrintArray("sameValuesButStrings", sameValuesButStrings);
-    PrintArray("sameValuesButObjects", sameValuesButObjects);
+    PrintArray("someIntValuesBack", someIntValuesBack!);
+    PrintArray("sameValuesButFloats", sameValuesButFloats!);
+    PrintArray("sameValuesButStrings", sameValuesButStrings!);
+    PrintArray("sameValuesButObjects", sameValuesButObjects!);
   }
 
   /// <summary>

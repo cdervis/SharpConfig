@@ -322,7 +322,9 @@ namespace Tests
     sealed class SectionTestObject
     {
       public string[]? SomeArrayProp { get; set; }
+#pragma warning disable CS0649 // Field is never assigned to (assigned via SharpConfig)
       public string[]? SomeArrayField;
+#pragma warning restore CS0649
     }
 
     [Test]
