@@ -21,7 +21,7 @@ Minimalistic, fully portable ([.NET Standard 2.0](https://learn.microsoft.com/en
 
 - .NET CLI: `> dotnet add package sharpconfig`
 - Package Manager: `> NuGet\Install-Package sharpconfig`
-- [Download latest](https://github.com/cdervis/SharpConfig/archive/refs/tags/v3.2.9.1.zip)
+- [Download latest](https://github.com/cdervis/SharpConfig/archive/refs/tags/v4.0.zip)
 
 ## Example
 
