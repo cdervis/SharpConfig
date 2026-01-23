@@ -26,7 +26,7 @@ namespace SharpConfig
       var currentSection = new Section(Section.DefaultSectionName);
       var preCommentBuilder = new StringBuilder();
       var lineNumber = 0;
-      string line;
+      string? line;
 
       // Read until EOF.
       while ((line = reader.ReadLine()) != null)
@@ -82,7 +82,7 @@ namespace SharpConfig
             currentSection.PreComment =
                 preCommentBuilder.ToString().TrimEnd(Environment.NewLine.ToCharArray());
 
-            preCommentBuilder.Length = 0; // Clear the SB - With .NET >= 4.0: preCommentBuilder.Clear()
+            preCommentBuilder.Clear();
           }
 
           config._sections.Add(currentSection);
@@ -109,7 +109,7 @@ namespace SharpConfig
       }
     }
 
-    private static string ParseComment(string line, out int commentCharIndex)
+    private static string? ParseComment(string line, out int commentCharIndex)
     {
       // A comment starts with a valid comment character that:
       // 1. is not within a quote (eg. "this is # not a comment"), and
@@ -118,7 +118,7 @@ namespace SharpConfig
       // A quote has two quotation marks, neither of which is escaped.
       // For example: "this is a quote \" with an escaped quotation mark inside of it"
 
-      string comment = null;
+      string? comment = null;
       commentCharIndex = -1;
 
       var index = 0;
@@ -191,7 +191,7 @@ namespace SharpConfig
       // 2) "<name>" = <value>
       //      <name> may contain any char, including '='
 
-      string settingName = null;
+      string? settingName = null;
       int equalSignIndex;
 
       // Parse the name first.
@@ -247,18 +247,19 @@ namespace SharpConfig
         settingValueBuffer.AppendLine("[[");
 
         bool foundClosing = false;
+        string? multilineLine;
 
-        while ((line = reader.ReadLine()) != null)
+        while ((multilineLine = reader.ReadLine()) != null)
         {
           ++lineNumber;
 
-          if (line == "]]")
+          if (multilineLine == "]]")
           {
             foundClosing = true;
             break;
           }
 
-          settingValueBuffer.AppendLine(line);
+          settingValueBuffer.AppendLine(multilineLine);
         }
 
         if (!foundClosing)
@@ -271,10 +272,10 @@ namespace SharpConfig
         settingValue = settingValueBuffer.ToString();
       }
 
-      return new Setting(settingName, settingValue);
+      return new Setting(settingName!, settingValue);
     }
 
-    internal static Configuration ReadFromBinaryStream(Stream stream, BinaryReader reader)
+    internal static Configuration ReadFromBinaryStream(Stream stream, BinaryReader? reader)
     {
       if (stream == null)
       {

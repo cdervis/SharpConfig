@@ -32,12 +32,12 @@ namespace SharpConfig
     /// <summary>
     /// Gets or sets the comment of this element.
     /// </summary>
-    public string Comment { get; set; }
+    public string? Comment { get; set; }
 
     /// <summary>
     /// Gets the comment above this element.
     /// </summary>
-    public string PreComment { get; set; }
+    public string? PreComment { get; set; }
 
     /// <summary>
     /// Gets the string representation of the element.
@@ -74,9 +74,9 @@ namespace SharpConfig
     private string GetFormattedComment()
     {
       // Only get the first line of the inline comment.
-      var comment = Comment;
+      var comment = Comment!;
 
-      var newLineIndex = Comment.IndexOfAny(Environment.NewLine.ToCharArray());
+      var newLineIndex = comment.IndexOfAny(Environment.NewLine.ToCharArray());
       if (newLineIndex >= 0)
       {
         comment = comment.Substring(0, newLineIndex);
@@ -89,7 +89,7 @@ namespace SharpConfig
     // to be written to a config file.
     private string GetFormattedPreComment()
     {
-      var lines = PreComment.Split(formattedPreCommentSeparator, StringSplitOptions.None);
+      var lines = PreComment!.Split(formattedPreCommentSeparator, StringSplitOptions.None);
 
       return string.Join(
           Environment.NewLine, Array.ConvertAll(lines, s => Configuration.PreferredCommentChar + " " + s));

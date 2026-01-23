@@ -21,7 +21,7 @@ namespace SharpConfig
   /// </summary>
   public class Configuration : IEnumerable<Section>
   {
-    private static CultureInfo s_cultureInfo;
+    private static CultureInfo? s_cultureInfo;
     private static char s_preferredCommentChar;
     private static char s_arrayElementSeparator;
     private static readonly Dictionary<Type, ITypeStringConverter> s_typeStringConverters;
@@ -120,8 +120,13 @@ namespace SharpConfig
     /// empty.</exception>
     public bool Remove(string sectionName)
     {
-      return string.IsNullOrEmpty(sectionName) ? throw new ArgumentNullException(nameof(sectionName))
-                                               : Remove(FindSection(sectionName));
+      if (string.IsNullOrEmpty(sectionName))
+      {
+        throw new ArgumentNullException(nameof(sectionName));
+      }
+
+      var section = FindSection(sectionName);
+      return section != null && Remove(section);
     }
 
     /// <summary>
@@ -228,6 +233,11 @@ namespace SharpConfig
 
       var type = converter.ConvertibleType;
 
+      if (type == null)
+      {
+        throw new ArgumentException("The converter's ConvertibleType cannot be null.", nameof(converter));
+      }
+
       if (s_typeStringConverters.ContainsKey(type))
       {
         throw new InvalidOperationException($"A converter for type '{type.FullName}' is already registered.");
@@ -277,7 +287,7 @@ namespace SharpConfig
         type = typeof(Enum);
       }
 
-      if (!s_typeStringConverters.TryGetValue(type, out ITypeStringConverter converter))
+      if (!s_typeStringConverters.TryGetValue(type, out ITypeStringConverter? converter))
       {
         converter = FallbackConverter;
       }
@@ -302,7 +312,7 @@ namespace SharpConfig
     /// <exception cref="ArgumentNullException">When <paramref name="filename"/> is null or empty.</exception>
     /// <exception cref="FileNotFoundException">When the specified configuration file is not
     /// found.</exception>
-    public static Configuration LoadFromFile(string filename, Encoding encoding = null)
+    public static Configuration LoadFromFile(string filename, Encoding? encoding = null)
     {
       if (string.IsNullOrEmpty(filename))
       {
@@ -331,7 +341,7 @@ namespace SharpConfig
     /// </returns>
     ///
     /// <exception cref="ArgumentNullException">When <paramref name="stream"/> is null.</exception>
-    public static Configuration LoadFromStream(Stream stream, Encoding encoding = null)
+    public static Configuration LoadFromStream(Stream stream, Encoding? encoding = null)
     {
       if (stream == null)
       {
@@ -374,7 +384,7 @@ namespace SharpConfig
     /// </returns>
     ///
     /// <exception cref="ArgumentNullException">When <paramref name="filename"/> is null or empty.</exception>
-    public static Configuration LoadFromBinaryFile(string filename, BinaryReader reader = null)
+    public static Configuration LoadFromBinaryFile(string filename, BinaryReader? reader = null)
     {
       if (string.IsNullOrEmpty(filename))
       {
@@ -400,7 +410,7 @@ namespace SharpConfig
     /// </returns>
     ///
     /// <exception cref="ArgumentNullException">When <paramref name="stream"/> is null.</exception>
-    public static Configuration LoadFromBinaryStream(Stream stream, BinaryReader reader = null)
+    public static Configuration LoadFromBinaryStream(Stream stream, BinaryReader? reader = null)
     {
       return stream == null ? throw new ArgumentNullException(nameof(stream))
                             : ConfigurationReader.ReadFromBinaryStream(stream, reader);
@@ -411,7 +421,7 @@ namespace SharpConfig
     /// </summary>
     ///
     /// <param name="filename">The location of the configuration file.</param>
-    public void SaveToFile(string filename) => SaveToFile(filename, null);
+    public void SaveToFile(string filename) => SaveToFile(filename, (Encoding?)null);
 
     /// <summary>
     /// Saves the configuration to a file.
@@ -422,7 +432,7 @@ namespace SharpConfig
     /// is UTF8.</param>
     ///
     /// <exception cref="ArgumentNullException">When <paramref name="filename"/> is null or empty.</exception>
-    public void SaveToFile(string filename, Encoding encoding)
+    public void SaveToFile(string filename, Encoding? encoding)
     {
       if (string.IsNullOrEmpty(filename))
       {
@@ -440,7 +450,7 @@ namespace SharpConfig
     /// </summary>
     ///
     /// <param name="stream">The stream to save the configuration to.</param>
-    public void SaveToStream(Stream stream) => SaveToStream(stream, null);
+    public void SaveToStream(Stream stream) => SaveToStream(stream, (Encoding?)null);
 
     /// <summary>
     /// Saves the configuration to a stream.
@@ -451,7 +461,7 @@ namespace SharpConfig
     /// is UTF8.</param>
     ///
     /// <exception cref="ArgumentNullException">When <paramref name="stream"/> is null.</exception>
-    public void SaveToStream(Stream stream, Encoding encoding)
+    public void SaveToStream(Stream stream, Encoding? encoding)
     {
       if (stream == null)
       {
@@ -466,7 +476,7 @@ namespace SharpConfig
     /// </summary>
     ///
     /// <param name="filename">The location of the configuration file.</param>
-    public void SaveToBinaryFile(string filename) => SaveToBinaryFile(filename, null);
+    public void SaveToBinaryFile(string filename) => SaveToBinaryFile(filename, (BinaryWriter?)null);
 
     /// <summary>
     /// Saves the configuration to a binary file, using a specific <see cref="BinaryWriter"/>.
@@ -476,7 +486,7 @@ namespace SharpConfig
     /// <param name="writer">  The writer to use. Specify null to use the default writer.</param>
     ///
     /// <exception cref="ArgumentNullException">When <paramref name="filename"/> is null or empty.</exception>
-    public void SaveToBinaryFile(string filename, BinaryWriter writer)
+    public void SaveToBinaryFile(string filename, BinaryWriter? writer)
     {
       if (string.IsNullOrEmpty(filename))
       {
@@ -494,7 +504,7 @@ namespace SharpConfig
     /// </summary>
     ///
     /// <param name="stream">The stream to save the configuration to.</param>
-    public void SaveToBinaryStream(Stream stream) => SaveToBinaryStream(stream, null);
+    public void SaveToBinaryStream(Stream stream) => SaveToBinaryStream(stream, (BinaryWriter?)null);
 
     /// <summary>
     /// Saves the configuration to a binary file, using a specific <see cref="BinaryWriter"/>.
@@ -504,7 +514,7 @@ namespace SharpConfig
     /// <param name="writer">The writer to use. Specify null to use the default writer.</param>
     ///
     /// <exception cref="ArgumentNullException">When <paramref name="stream"/> is null.</exception>
-    public void SaveToBinaryStream(Stream stream, BinaryWriter writer)
+    public void SaveToBinaryStream(Stream stream, BinaryWriter? writer)
     {
       if (stream == null)
       {
@@ -580,7 +590,7 @@ namespace SharpConfig
     /// <exception cref="ArgumentNullException">When a null reference is set.</exception>
     public static CultureInfo CultureInfo
     {
-      get => s_cultureInfo;
+      get => s_cultureInfo!;
       set => s_cultureInfo = value ?? throw new ArgumentNullException(nameof(value));
     }
 
@@ -588,7 +598,7 @@ namespace SharpConfig
     /// Gets the array that contains all valid comment delimiting characters.
     /// The default value is { '#', ';' }.
     /// </summary>
-    public static HashSet<char> ValidCommentChars { get; private set; }
+    public static HashSet<char> ValidCommentChars { get; private set; } = null!;
 
     /// <summary>
     /// Gets or sets the preferred comment char when saving configurations.
@@ -603,7 +613,7 @@ namespace SharpConfig
       {
         if (!ValidCommentChars.Contains(value))
         {
-          throw new ArgumentException("The specified char '" + value + "' is not allowed as a comment char.");
+          throw new ArgumentException($"The specified char '{value}' is not allowed as a comment char.");
         }
 
         s_preferredCommentChar = value;
@@ -749,7 +759,7 @@ namespace SharpConfig
     }
 
     // Finds a section by its name.
-    private Section FindSection(string name)
+    private Section? FindSection(string name)
     {
       return _sections.FirstOrDefault(
           section => string.Equals(section.Name, name, StringComparison.OrdinalIgnoreCase));

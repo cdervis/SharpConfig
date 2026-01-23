@@ -21,7 +21,7 @@ namespace SharpConfig
     /// <summary>
     /// The type that this converter is able to convert to and from a string.
     /// </summary>
-    Type ConvertibleType { get; }
+    Type? ConvertibleType { get; }
 
     /// <summary>
     /// Tries to convert a string value to an object of this converter's type.
@@ -34,7 +34,7 @@ namespace SharpConfig
     ///     This parameter can be safely ignored for custom converters.
     /// </param>
     /// <returns>The converted object, or null if conversion is not possible.</returns>
-    object TryConvertFromString(string value, Type hint);
+    object? TryConvertFromString(string value, Type hint);
   }
 
   /// <summary>
@@ -67,6 +67,6 @@ namespace SharpConfig
     ///     This parameter can be safely ignored for custom converters.
     /// </param>
     /// <returns>The converted object, or null if conversion is not possible.</returns>
-    public abstract object TryConvertFromString(string value, Type hint);
+    public abstract object? TryConvertFromString(string value, Type hint);
   }
 }

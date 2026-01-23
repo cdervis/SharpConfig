@@ -28,21 +28,21 @@ namespace SharpConfig
       }
     }
 
-    internal static void WriteToStreamTextual(Configuration cfg, Stream stream, Encoding encoding)
+    internal static void WriteToStreamTextual(Configuration cfg, Stream stream, Encoding? encoding)
     {
-      Debug.Assert(cfg != null);
+      if (cfg == null)
+      {
+        throw new ArgumentNullException(nameof(cfg));
+      }
 
       if (stream == null)
       {
         throw new ArgumentNullException(nameof(stream));
       }
 
-      if (encoding == null)
-      {
-        encoding = Encoding.UTF8;
-      }
+      encoding ??= Encoding.UTF8;
 
-      var str = cfg.SaveToString();
+      string str = cfg.SaveToString();
 
       // Encode & write the string.
       var byteBuffer = new byte[encoding.GetByteCount(str)];
@@ -52,9 +52,12 @@ namespace SharpConfig
       stream.Flush();
     }
 
-    internal static void WriteToStreamBinary(Configuration cfg, Stream stream, BinaryWriter writer)
+    internal static void WriteToStreamBinary(Configuration cfg, Stream stream, BinaryWriter? writer)
     {
-      Debug.Assert(cfg != null);
+      if (cfg == null)
+      {
+        throw new ArgumentNullException(nameof(cfg));
+      }
 
       if (stream == null)
       {

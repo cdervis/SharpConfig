@@ -77,7 +77,7 @@ namespace SharpConfig
     /// </summary>
     public string[] StringValueArray
     {
-      get => GetValueArray<string>();
+      get => GetValueArray<string>() ?? throw new InvalidOperationException("Setting is not an array.");
       set => SetValue(value);
     }
 
@@ -97,7 +97,7 @@ namespace SharpConfig
     /// </summary>
     public int[] IntValueArray
     {
-      get => GetValueArray<int>();
+      get => GetValueArray<int>() ?? throw new InvalidOperationException("Setting is not an array.");
       set => SetValue(value);
     }
 
@@ -117,7 +117,7 @@ namespace SharpConfig
     /// </summary>
     public float[] FloatValueArray
     {
-      get => GetValueArray<float>();
+      get => GetValueArray<float>() ?? throw new InvalidOperationException("Setting is not an array.");
       set => SetValue(value);
     }
 
@@ -137,7 +137,7 @@ namespace SharpConfig
     /// </summary>
     public double[] DoubleValueArray
     {
-      get => GetValueArray<double>();
+      get => GetValueArray<double>() ?? throw new InvalidOperationException("Setting is not an array.");
       set => SetValue(value);
     }
 
@@ -157,7 +157,7 @@ namespace SharpConfig
     /// </summary>
     public decimal[] DecimalValueArray
     {
-      get => GetValueArray<decimal>();
+      get => GetValueArray<decimal>() ?? throw new InvalidOperationException("Setting is not an array.");
       set => SetValue(value);
     }
 
@@ -177,7 +177,7 @@ namespace SharpConfig
     /// </summary>
     public bool[] BoolValueArray
     {
-      get => GetValueArray<bool>();
+      get => GetValueArray<bool>() ?? throw new InvalidOperationException("Setting is not an array.");
       set => SetValue(value);
     }
 
@@ -197,7 +197,7 @@ namespace SharpConfig
     /// </summary>
     public DateTime[] DateTimeValueArray
     {
-      get => GetValueArray<DateTime>();
+      get => GetValueArray<DateTime>() ?? throw new InvalidOperationException("Setting is not an array.");
       set => SetValue(value);
     }
 
@@ -217,7 +217,7 @@ namespace SharpConfig
     /// </summary>
     public byte[] ByteValueArray
     {
-      get => GetValueArray<byte>();
+      get => GetValueArray<byte>() ?? throw new InvalidOperationException("Setting is not an array.");
       set => SetValue(value);
     }
 
@@ -237,7 +237,7 @@ namespace SharpConfig
     /// </summary>
     public sbyte[] SByteValueArray
     {
-      get => GetValueArray<sbyte>();
+      get => GetValueArray<sbyte>() ?? throw new InvalidOperationException("Setting is not an array.");
       set => SetValue(value);
     }
 
@@ -260,7 +260,7 @@ namespace SharpConfig
       get {
         // Decode the bytes back to chars.
         byte[] bytes = ByteValueArray;
-        return bytes != null ? Encoding.UTF8.GetChars(ByteValueArray) : null;
+        return Encoding.UTF8.GetChars(bytes);
       }
       set {
         if (value != null)
@@ -347,7 +347,7 @@ namespace SharpConfig
             "The setting represents an array. Use GetValueArray() to obtain its value.");
       }
 
-      return CreateObjectFromString(RawValue, type);
+      return CreateObjectFromString(RawValue, type)!;
     }
 
     /// <summary>
@@ -358,8 +358,8 @@ namespace SharpConfig
     ///     The type of elements in the array. All values in the array are going to be converted to objects of
     ///     this type. If the conversion of an element fails, an exception is thrown.
     /// </param>
-    /// <returns>The values of this setting as an array.</returns>
-    public object[] GetValueArray(Type elementType)
+    /// <returns>The values of this setting as an array, or null if the setting is not an array.</returns>
+    public object[]? GetValueArray(Type elementType)
     {
       if (elementType.IsArray)
       {
@@ -382,7 +382,7 @@ namespace SharpConfig
 
         while (enumerator.Next())
         {
-          values[elementIndex] = CreateObjectFromString(enumerator.Current, elementType);
+          values[elementIndex] = CreateObjectFromString(enumerator.Current!, elementType)!;
           ++elementIndex;
         }
       }
@@ -415,7 +415,7 @@ namespace SharpConfig
             "The setting represents an array. Use GetValueArray() to obtain its value.");
       }
 
-      return (T)CreateObjectFromString(RawValue, type);
+      return (T)CreateObjectFromString(RawValue, type)!;
     }
 
     /// <summary>
@@ -426,8 +426,8 @@ namespace SharpConfig
     ///     The type of elements in the array. All values in the array are going to be converted to objects of
     ///     this type. If the conversion of an element fails, an exception is thrown.
     /// </typeparam>
-    /// <returns>The values of this setting as an array.</returns>
-    public T[] GetValueArray<T>()
+    /// <returns>The values of this setting as an array, or null if the setting is not an array.</returns>
+    public T[]? GetValueArray<T>()
     {
       var type = typeof(T);
 
@@ -452,7 +452,7 @@ namespace SharpConfig
 
         while (enumerator.Next())
         {
-          values[elementIndex] = (T)CreateObjectFromString(enumerator.Current, type);
+          values[elementIndex] = (T)CreateObjectFromString(enumerator.Current!, type)!;
           ++elementIndex;
         }
       }
@@ -503,7 +503,7 @@ namespace SharpConfig
     }
 
     // Converts the value of a single element to a desired type.
-    private static object CreateObjectFromString(string value, Type dstType, bool tryConvert = false)
+    private static object? CreateObjectFromString(string value, Type dstType, bool tryConvert = false)
     {
       var underlyingType = Nullable.GetUnderlyingType(dstType);
 
@@ -564,8 +564,8 @@ namespace SharpConfig
     /// Sets the value of this setting via an object.
     /// </summary>
     ///
-    /// <param name="value">The value to set.</param>
-    public void SetValue(object value)
+    /// <param name="value">The value to set. Can be null to set an empty value.</param>
+    public void SetValue(object? value)
     {
       if (value == null)
       {
@@ -581,28 +581,22 @@ namespace SharpConfig
 
         if (elementType != null && elementType.IsArray)
         {
-          throw CreateJaggedArraysNotSupportedEx(type.GetElementType());
+          throw CreateJaggedArraysNotSupportedEx(elementType);
         }
 
-        var values = value as Array;
-
-        if (values != null)
+        if (value is Array values)
         {
           var strings = new string[values.Length];
 
           for (int i = 0; i < values.Length; i++)
           {
-            var elemValue = values.GetValue(i);
+            var elemValue = values.GetValue(i)!;
             var converter = Configuration.FindTypeStringConverter(elemValue.GetType());
 
             strings[i] = GetValueForOutput(converter.ConvertToString(elemValue));
           }
 
           RawValue = $"{{{string.Join(Configuration.ArrayElementSeparator.ToString(), strings)}}}";
-        }
-
-        if (values != null)
-        {
           _cachedArraySize = values.Length;
         }
 

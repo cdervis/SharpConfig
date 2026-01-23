@@ -70,7 +70,7 @@ namespace SharpConfig
           continue;
         }
 
-        object value = prop.GetValue(obj, null);
+        object? value = prop.GetValue(obj, null);
         var setting = new Setting(prop.Name);
 
         if (prop.GetCustomAttributes(typeof(MultilineAttribute), false).Length > 0)
@@ -94,7 +94,7 @@ namespace SharpConfig
           continue;
         }
 
-        object value = field.GetValue(obj);
+        object? value = field.GetValue(obj);
         var setting = new Setting(field.Name);
 
         if (field.GetCustomAttributes(typeof(MultilineAttribute), false).Length > 0)
@@ -133,7 +133,7 @@ namespace SharpConfig
     public T ToObject<T>()
         where T : new()
     {
-      var obj = Activator.CreateInstance<T>();
+      var obj = Activator.CreateInstance<T>()!;
       SetValuesTo(obj);
 
       return obj;
@@ -166,8 +166,8 @@ namespace SharpConfig
         throw new ArgumentNullException(nameof(type));
       }
 
-      var obj = Activator.CreateInstance(type);
-      SetValuesTo(obj);
+      var obj = Activator.CreateInstance(type)!;
+      SetValuesTo(obj!);
 
       return obj;
     }
@@ -216,13 +216,13 @@ namespace SharpConfig
         return;
       }
 
-      Setting setting = FindSetting(info.Name);
+      Setting? setting = FindSetting(info.Name);
       if (setting == null)
       {
         return;
       }
 
-      object value = null;
+      object? value = null;
 
       switch (info)
       {
@@ -277,7 +277,8 @@ namespace SharpConfig
           continue;
         }
 
-        var value = prop.PropertyType.IsArray ? setting.GetValueArray(prop.PropertyType.GetElementType())
+        var propElementType = prop.PropertyType.GetElementType();
+        var value = prop.PropertyType.IsArray ? setting.GetValueArray(propElementType!)
                                               : setting.GetValue(prop.PropertyType);
 
         if (prop.PropertyType.IsArray)
@@ -288,10 +289,10 @@ namespace SharpConfig
           if (settingArray != null && (propArray == null || propArray.Length != settingArray.Length))
           {
             // (Re)create the property's array.
-            propArray = Array.CreateInstance(prop.PropertyType.GetElementType(), length: settingArray.Length);
+            propArray = Array.CreateInstance(propElementType!, length: settingArray.Length);
           }
 
-          for (int i = 0; i < settingArray.Length; i++)
+          for (int i = 0; i < settingArray!.Length; i++)
           {
             propArray?.SetValue(settingArray.GetValue(i), i);
           }
@@ -320,7 +321,8 @@ namespace SharpConfig
           continue;
         }
 
-        var value = field.FieldType.IsArray ? setting.GetValueArray(field.FieldType.GetElementType())
+        var fieldElementType = field.FieldType.GetElementType();
+        var value = field.FieldType.IsArray ? setting.GetValueArray(fieldElementType!)
                                             : setting.GetValue(field.FieldType);
 
         if (field.FieldType.IsArray)
@@ -331,12 +333,12 @@ namespace SharpConfig
           if (settingArray != null && (fieldArray == null || fieldArray.Length != settingArray.Length))
           {
             // (Re)create the field's array.
-            fieldArray = Array.CreateInstance(field.FieldType.GetElementType(), settingArray.Length);
+            fieldArray = Array.CreateInstance(fieldElementType!, settingArray.Length);
           }
 
-          for (int i = 0; i < settingArray.Length; i++)
+          for (int i = 0; i < settingArray!.Length; i++)
           {
-            fieldArray.SetValue(settingArray.GetValue(i), i);
+            fieldArray!.SetValue(settingArray.GetValue(i), i);
           }
 
           field.SetValue(obj, fieldArray);
@@ -442,7 +444,8 @@ namespace SharpConfig
         throw new ArgumentNullException(nameof(settingName));
       }
 
-      return Remove(FindSetting(settingName));
+      var setting = FindSetting(settingName);
+      return setting != null && Remove(setting);
     }
 
     /// <summary>
@@ -582,7 +585,7 @@ namespace SharpConfig
     }
 
     // Finds a setting by its name.
-    private Setting FindSetting(string name)
+    private Setting? FindSetting(string name)
     {
       return _settings.FirstOrDefault(
           setting => string.Equals(setting.Name, name, StringComparison.OrdinalIgnoreCase));
