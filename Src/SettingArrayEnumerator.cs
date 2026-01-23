@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2013-2025 Cem Dervis, MIT License.
+// Copyright (c) 2013-2026 Cem Dervis, MIT License.
 // https://sharpconfig.org
 
 namespace SharpConfig

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>An easy to use cfg/ini configuration library for .NET.</Description>
-    <Copyright>Copyright 2013-2025 Cem Dervis</Copyright>
+    <Copyright>Copyright 2013-2026 Cem Dervis</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <AssemblyVersion>4.0</AssemblyVersion>
