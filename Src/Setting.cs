@@ -52,7 +52,22 @@ namespace SharpConfig
     /// </summary>
     public string StringValue
     {
-      get => Configuration.OutputRawStringValues ? GetValue<string>() : GetValue<string>().Trim('\"');
+      get
+      {
+        if (Configuration.OutputRawStringValues)
+        {
+          return GetValue<string>();
+        }
+
+        // If the value is a multiline value, we don't want to trim quotes,
+        // as they are part of the verbatim content.
+        if (RawValue.StartsWith("[[") && RawValue.EndsWith("]]"))
+        {
+          return GetValue<string>();
+        }
+
+        return GetValue<string>().Trim('\"');
+      }
       set => SetValue(Configuration.OutputRawStringValues ? value : value.Trim('\"'));
     }
 
@@ -504,6 +519,36 @@ namespace SharpConfig
         dstType = underlyingType;
       }
 
+      // If the value is a multiline value, strip the delimiters.
+      if (value.StartsWith("[[") && value.EndsWith("]]"))
+      {
+        value = value.Substring(2, value.Length - 4);
+        
+        // Strip leading and trailing newlines.
+        if (value.StartsWith("\r\n"))
+        {
+          value = value.Substring(2);
+        }
+        else if (value.StartsWith("\n"))
+        {
+          value = value.Substring(1);
+        }
+
+        if (value.EndsWith("\r\n"))
+        {
+          value = value.Substring(0, value.Length - 2);
+        }
+        else if (value.EndsWith("\n"))
+        {
+          value = value.Substring(0, value.Length - 1);
+        }
+
+        if (dstType == typeof(string))
+        {
+          return value;
+        }
+      }
+
       var converter = Configuration.FindTypeStringConverter(dstType);
       var obj = converter.TryConvertFromString(value, dstType);
 
@@ -591,6 +636,11 @@ namespace SharpConfig
       }
 
       if (rawValue.StartsWith("\"") && rawValue.EndsWith("\""))
+      {
+        return rawValue;
+      }
+
+      if (rawValue.StartsWith("[[") && rawValue.EndsWith("]]"))
       {
         return rawValue;
       }

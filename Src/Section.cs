@@ -70,7 +70,18 @@ namespace SharpConfig
           continue;
         }
 
-        var setting = new Setting(prop.Name, prop.GetValue(obj, null));
+        object value = prop.GetValue(obj, null);
+        var setting = new Setting(prop.Name);
+
+        if (prop.GetCustomAttributes(typeof(MultilineAttribute), false).Length > 0)
+        {
+          setting.RawValue = $"[[\n{value}\n]]";
+        }
+        else
+        {
+          setting.SetValue(value);
+        }
+
         section._settings.Add(setting);
       }
 
@@ -83,7 +94,18 @@ namespace SharpConfig
           continue;
         }
 
-        var setting = new Setting(field.Name, field.GetValue(obj));
+        object value = field.GetValue(obj);
+        var setting = new Setting(field.Name);
+
+        if (field.GetCustomAttributes(typeof(MultilineAttribute), false).Length > 0)
+        {
+          setting.RawValue = $"[[\n{value}\n]]";
+        }
+        else
+        {
+          setting.SetValue(value);
+        }
+
         section._settings.Add(setting);
       }
 
@@ -211,8 +233,15 @@ namespace SharpConfig
           value = propertyInfo.GetValue(instance, null);
           break;
       }
+      if (info.GetCustomAttributes(typeof(MultilineAttribute), false).Length > 0)
+      {
+        setting.RawValue = $"[[\n{value}\n]]";
+      }
+      else
+      {
+        setting.SetValue(value);
+      }
 
-      setting.SetValue(value);
     }
 
     /// <summary>
