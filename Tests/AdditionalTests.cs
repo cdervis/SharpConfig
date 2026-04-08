@@ -2,8 +2,10 @@
 // https://sharpconfig.org
 
 using System;
+using System.Linq;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Legacy.ClassicAssert;
+using CollectionAssert = NUnit.Framework.Legacy.CollectionAssert;
 using SharpConfig;
 
 namespace Tests
@@ -121,11 +123,8 @@ namespace Tests
             section.Add(new Setting("setting1"));
             section.Add(new Setting("Setting2"));
 
-            var settings = section.GetSettingsNamed("Setting1");
-            int count = 0;
-            foreach (var s in settings) count++;
-            
-            Assert.AreEqual(2, count);
+            Assert.AreEqual(2, section.GetSettingsNamed("Setting1").Count());
+            Assert.AreEqual(1, section.GetSettingsNamed("Setting1", StringComparison.Ordinal).Count());
         }
 
         [Test]
@@ -136,11 +135,142 @@ namespace Tests
             cfg.Add(new Section("section1"));
             cfg.Add(new Section("Section2"));
 
-            var sections = cfg.GetSectionsNamed("Section1");
-            int count = 0;
-            foreach (var s in sections) count++;
+            Assert.AreEqual(2, cfg.GetSectionsNamed("Section1").Count());
+            Assert.AreEqual(1, cfg.GetSectionsNamed("Section1", StringComparison.Ordinal).Count());
+        }
 
-            Assert.AreEqual(2, count);
+        [Test]
+        public void CachedObjectMappingPreservesBehavior()
+        {
+            var source = new TestObject
+            {
+                IntField = 10,
+                StringProp = "Hello"
+            };
+
+            for (int i = 0; i < 3; i++)
+            {
+                var section = Section.FromObject("TestSection", source);
+                Assert.AreEqual(10, section["IntField"].IntValue);
+                Assert.AreEqual("Hello", section["StringProp"].StringValue);
+            }
+
+            var targetSection = new Section("TestSection");
+            targetSection["IntField"].IntValue = 10;
+            targetSection["StringProp"].StringValue = "Hello";
+
+            for (int i = 0; i < 3; i++)
+            {
+                var obj = targetSection.ToObject<TestObject>();
+                Assert.AreEqual(10, obj.IntField);
+                Assert.AreEqual("Hello", obj.StringProp);
+            }
+        }
+
+        [Test]
+        public void ReflectionMappingPreservesBehaviorAcrossRepeatedCalls()
+        {
+            var source = new RichMappingObject
+            {
+                Number = 42,
+                Name = "Source",
+                MultilineProp = "Line1\nLine2",
+                MultilineField = "Field1\nField2",
+                IntArrayProp = new[] { 1, 2, 3 },
+                StringArrayField = new[] { "A", "B" },
+                IgnoredProp = "Ignored source property",
+                IgnoredByTypeProp = new IgnoredMappedType { Value = "Ignored source type" }
+            };
+
+            for (int i = 0; i < 3; i++)
+            {
+                var section = Section.FromObject("TestSection", source);
+
+                Assert.AreEqual(7, section.SettingCount);
+                Assert.AreEqual(42, section["Number"].IntValue);
+                Assert.AreEqual("Source", section["Name"].StringValue);
+                Assert.AreEqual("[[\nLine1\nLine2\n]]", section["MultilineProp"].RawValue);
+                Assert.AreEqual("[[\nField1\nField2\n]]", section["MultilineField"].RawValue);
+                CollectionAssert.AreEqual(new[] { 1, 2, 3 }, section["IntArrayProp"].IntValueArray);
+                CollectionAssert.AreEqual(new[] { "A", "B" }, section["StringArrayField"].StringValueArray);
+                Assert.AreEqual(7, section["ReadonlyField"].IntValue);
+                Assert.IsFalse(section.Contains("IgnoredProp"));
+                Assert.IsFalse(section.Contains("IgnoredByTypeProp"));
+            }
+
+            var targetSection = new Section("Target");
+            targetSection["Number"].IntValue = 42;
+            targetSection["Name"].StringValue = "Target";
+            targetSection["MultilineProp"].RawValue = "[[\nLine1\nLine2\n]]";
+            targetSection["MultilineField"].RawValue = "[[\nField1\nField2\n]]";
+            targetSection["IntArrayProp"].RawValue = "{1,2,3}";
+            targetSection["StringArrayField"].RawValue = "{A,B}";
+            targetSection["ReadonlyField"].IntValue = 999;
+            targetSection["IgnoredProp"].StringValue = "Should stay untouched";
+            targetSection["IgnoredByTypeProp"].StringValue = "Should also stay untouched";
+
+            for (int i = 0; i < 3; i++)
+            {
+                var generic = targetSection.ToObject<RichMappingObject>();
+                AssertRichMappingObject(
+                    generic,
+                    expectedName: "Target",
+                    expectedIgnoredProp: "ignored-prop-default",
+                    expectedIgnoredTypeValue: "ignored-type-default");
+
+                var nonGeneric = (RichMappingObject)targetSection.ToObject(typeof(RichMappingObject));
+                AssertRichMappingObject(
+                    nonGeneric,
+                    expectedName: "Target",
+                    expectedIgnoredProp: "ignored-prop-default",
+                    expectedIgnoredTypeValue: "ignored-type-default");
+
+                var existing = new RichMappingObject
+                {
+                    Number = -1,
+                    Name = "Before",
+                    MultilineProp = "Before",
+                    MultilineField = "Before",
+                    IntArrayProp = new[] { 9 },
+                    StringArrayField = new[] { "Z" },
+                    IgnoredProp = "Keep ignored property",
+                    IgnoredByTypeProp = new IgnoredMappedType { Value = "Keep ignored type" }
+                };
+
+                targetSection.SetValuesTo(existing);
+
+                AssertRichMappingObject(
+                    existing,
+                    expectedName: "Target",
+                    expectedIgnoredProp: "Keep ignored property",
+                    expectedIgnoredTypeValue: "Keep ignored type");
+            }
+
+            var updateSection = new Section("Update");
+            updateSection.Add("Number");
+            updateSection.Add("Name");
+            updateSection.Add("MultilineProp");
+            updateSection.Add("MultilineField");
+            updateSection.Add("IntArrayProp");
+            updateSection.Add("StringArrayField");
+            updateSection.Add("ReadonlyField");
+            updateSection.Add("IgnoredProp").RawValue = "keep-ignored-property";
+            updateSection.Add("IgnoredByTypeProp").RawValue = "keep-ignored-type";
+
+            for (int i = 0; i < 3; i++)
+            {
+                updateSection.GetValuesFrom(source);
+
+                Assert.AreEqual(42, updateSection["Number"].IntValue);
+                Assert.AreEqual("Source", updateSection["Name"].StringValue);
+                Assert.AreEqual("[[\nLine1\nLine2\n]]", updateSection["MultilineProp"].RawValue);
+                Assert.AreEqual("[[\nField1\nField2\n]]", updateSection["MultilineField"].RawValue);
+                CollectionAssert.AreEqual(new[] { 1, 2, 3 }, updateSection["IntArrayProp"].IntValueArray);
+                CollectionAssert.AreEqual(new[] { "A", "B" }, updateSection["StringArrayField"].StringValueArray);
+                Assert.AreEqual(7, updateSection["ReadonlyField"].IntValue);
+                Assert.AreEqual("keep-ignored-property", updateSection["IgnoredProp"].StringValue);
+                Assert.AreEqual("keep-ignored-type", updateSection["IgnoredByTypeProp"].StringValue);
+            }
         }
 
         [Test]
@@ -211,6 +341,54 @@ namespace Tests
 
             [SharpConfig.Ignore]
             public string IgnoredProp { get; set; } = string.Empty;
+        }
+
+        [SharpConfig.Ignore]
+        private sealed class IgnoredMappedType
+        {
+            public string Value { get; set; } = string.Empty;
+        }
+
+        private sealed class RichMappingObject
+        {
+            public int Number { get; set; }
+            public string Name = string.Empty;
+
+            [Multiline]
+            public string MultilineProp { get; set; } = string.Empty;
+
+            [Multiline]
+            public string MultilineField = string.Empty;
+
+            public int[] IntArrayProp { get; set; } = Array.Empty<int>();
+            public string[] StringArrayField = Array.Empty<string>();
+
+#pragma warning disable CS0649
+            public readonly int ReadonlyField = 7;
+#pragma warning restore CS0649
+
+            [SharpConfig.Ignore]
+            public string IgnoredProp { get; set; } = "ignored-prop-default";
+
+            public IgnoredMappedType IgnoredByTypeProp { get; set; } =
+                new IgnoredMappedType { Value = "ignored-type-default" };
+        }
+
+        private static void AssertRichMappingObject(
+            RichMappingObject obj,
+            string expectedName,
+            string expectedIgnoredProp,
+            string expectedIgnoredTypeValue)
+        {
+            Assert.AreEqual(42, obj.Number);
+            Assert.AreEqual(expectedName, obj.Name);
+            Assert.AreEqual("Line1\nLine2", obj.MultilineProp);
+            Assert.AreEqual("Field1\nField2", obj.MultilineField);
+            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, obj.IntArrayProp);
+            CollectionAssert.AreEqual(new[] { "A", "B" }, obj.StringArrayField);
+            Assert.AreEqual(7, obj.ReadonlyField);
+            Assert.AreEqual(expectedIgnoredProp, obj.IgnoredProp);
+            Assert.AreEqual(expectedIgnoredTypeValue, obj.IgnoredByTypeProp.Value);
         }
     }
 }

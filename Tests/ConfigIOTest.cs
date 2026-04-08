@@ -2,6 +2,7 @@
 // https://sharpconfig.org
 
 using System.IO;
+using System.Text;
 using SharpConfig;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Legacy.ClassicAssert;
@@ -90,6 +91,87 @@ namespace Tests
       stream.Dispose();
 
       ValidateExampleConfig(cfg);
+    }
+
+    [Test]
+    public void LoadFromStream_LeavesProvidedStreamOpen()
+    {
+      var bytes = Encoding.UTF8.GetBytes("[TestSection]\nIntSetting1=100\nIntSetting2=200\nStringSetting1=Test");
+      var stream = new MemoryStream(bytes);
+
+      var cfg = Configuration.LoadFromStream(stream);
+
+      ValidateExampleConfig(cfg);
+      Assert.DoesNotThrow(() => stream.Position = 0);
+      Assert.IsTrue(stream.CanRead);
+    }
+
+    [Test]
+    public void SaveToStream_LeavesProvidedStreamOpen()
+    {
+      var cfg = CreateExampleConfig();
+      var stream = new MemoryStream();
+
+      cfg.SaveToStream(stream);
+
+      Assert.DoesNotThrow(() => stream.Position = 0);
+      Assert.IsTrue(stream.CanRead);
+    }
+
+    [Test]
+    public void LoadFromBinaryStream_LeavesProvidedStreamOpen()
+    {
+      var cfg = CreateExampleConfig();
+      var stream = new MemoryStream();
+      cfg.SaveToBinaryStream(stream);
+      stream.Position = 0;
+
+      var loaded = Configuration.LoadFromBinaryStream(stream);
+
+      ValidateExampleConfig(loaded);
+      Assert.DoesNotThrow(() => stream.Position = 0);
+      Assert.IsTrue(stream.CanRead);
+    }
+
+    [Test]
+    public void SaveToBinaryStream_DefaultWriterLeavesStreamOpen()
+    {
+      var cfg = CreateExampleConfig();
+      var stream = new MemoryStream();
+
+      cfg.SaveToBinaryStream(stream);
+
+      Assert.DoesNotThrow(() => stream.Position = 0);
+      Assert.IsTrue(stream.CanRead);
+    }
+
+    [Test]
+    public void SaveToBinaryStream_CallerProvidedWriterIsLeftOpen()
+    {
+      var cfg = CreateExampleConfig();
+      var stream = new MemoryStream();
+      var writer = new BinaryWriter(stream);
+
+      cfg.SaveToBinaryStream(stream, writer);
+
+      Assert.DoesNotThrow(() => writer.Write(1));
+      Assert.DoesNotThrow(() => stream.WriteByte(1));
+    }
+
+    [Test]
+    public void LoadFromBinaryStream_CallerProvidedReaderIsLeftOpen()
+    {
+      var cfg = CreateExampleConfig();
+      var stream = new MemoryStream();
+      cfg.SaveToBinaryStream(stream);
+      stream.Position = 0;
+      var reader = new BinaryReader(stream);
+
+      var loaded = Configuration.LoadFromBinaryStream(stream, reader);
+
+      ValidateExampleConfig(loaded);
+      Assert.DoesNotThrow(() => reader.BaseStream.Position = 0);
+      Assert.IsTrue(reader.BaseStream.CanRead);
     }
   }
 }
