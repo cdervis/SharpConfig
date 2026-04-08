@@ -6,10 +6,10 @@
     <Copyright>Copyright 2013-2026 Cem Dervis</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <AssemblyVersion>4.0</AssemblyVersion>
-    <FileVersion>4.0</FileVersion>
+    <AssemblyVersion>4.1.0</AssemblyVersion>
+    <FileVersion>4.1.0</FileVersion>
     <PackageIcon>logo.png</PackageIcon>
-    <Version>4.0</Version>
+    <Version>4.1.0</Version>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <Authors>Cem Dervis</Authors>
@@ -28,7 +28,7 @@
 
   <PropertyGroup>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>NuGetReadme.md</PackageReadmeFile>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
     <Title>SharpConfig</Title>
@@ -50,7 +50,7 @@
       <PackagePath></PackagePath>
       <Link>logo.png</Link>
     </None>
-    <None Include="..\README.md">
+    <None Include="NuGetReadme.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>

@@ -8,7 +8,7 @@
 
 You can use SharpConfig to read, modify and save configuration files and streams, in either text or binary format.
 
-Minimalistic, fully portable ([.NET Standard 2.0](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-2-0#select-net-standard-version)), zero package dependencies.
+Minimalistic, fully portable ([.NET Standard 2.0](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-2.0#select-net-standard-version)), zero package dependencies.
 
 [![Website](https://img.shields.io/badge/Homepage-blue)](https://sharpconfig.org)
 [![NuGet Version](https://img.shields.io/nuget/v/sharpconfig)](https://www.nuget.org/packages/sharpconfig) 
@@ -21,7 +21,8 @@ Minimalistic, fully portable ([.NET Standard 2.0](https://learn.microsoft.com/en
 
 - .NET CLI: `> dotnet add package sharpconfig`
 - Package Manager: `> NuGet\Install-Package sharpconfig`
-- [Download latest](https://github.com/cdervis/SharpConfig/archive/refs/tags/v4.0.zip)
+- [Download latest source](https://github.com/cdervis/SharpConfig/archive/refs/tags/v4.1.0.zip)
+- [Download latest binaries](https://github.com/cdervis/SharpConfig/releases/download/v4.1.0/lib.zip)
 
 ## Example
 

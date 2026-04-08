@@ -210,13 +210,6 @@ namespace SharpConfig
     }
 
     /// <summary>
-    /// Gets the string representation of the configuration. It represents the same contents
-    /// as if the configuration was saved to a file or stream.
-    /// </summary>
-    [Obsolete("Please use SaveToString() instead. This property will be removed starting in version 4.1.")]
-    public string StringRepresentation => SaveToString();
-
-    /// <summary>
     /// Registers a type converter to be used for setting value conversions.
     /// </summary>
     /// <param name="converter">The converter to register.</param>
