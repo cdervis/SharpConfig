@@ -341,7 +341,10 @@ namespace SharpConfig
         throw new ArgumentNullException(nameof(stream));
       }
 
-      using (var reader = encoding == null ? new StreamReader(stream) : new StreamReader(stream, encoding))
+      using (var reader =
+          encoding == null
+              ? new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true)
+              : new StreamReader(stream, encoding, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true))
       {
         return LoadFromString(reader.ReadToEnd());
       }
@@ -522,57 +525,7 @@ namespace SharpConfig
     /// </summary>
     public string SaveToString()
     {
-      var sb = new StringBuilder();
-
-      // Write all sections.
-      bool isFirstSection = true;
-
-      void WriteSection(Section section)
-      {
-        if (!isFirstSection)
-        {
-          sb.AppendLine();
-        }
-
-        // Leave some space between this section and the element that is above,
-        // if this section has pre-comments and isn't the first section in the configuration.
-        if (!isFirstSection && section.PreComment != null)
-        {
-          sb.AppendLine();
-        }
-
-        if (section.Name != Section.DefaultSectionName)
-        {
-          sb.AppendLine(section.ToString());
-        }
-
-        // Write all settings.
-        foreach (var setting in section)
-        {
-          sb.AppendLine(setting.ToString());
-        }
-
-        if (section.Name != Section.DefaultSectionName || section.SettingCount > 0)
-        {
-          isFirstSection = false;
-        }
-      }
-
-      // Write the default section first.
-      var defaultSection = DefaultSection;
-
-      if (defaultSection.SettingCount > 0)
-      {
-        WriteSection(DefaultSection);
-      }
-
-      // Now the rest.
-      foreach (var section in _sections.Where(section => section != defaultSection))
-      {
-        WriteSection(section);
-      }
-
-      return sb.ToString();
+      return ConfigurationWriter.WriteToString(this);
     }
 
     /// <summary>

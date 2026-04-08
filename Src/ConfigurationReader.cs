@@ -284,7 +284,7 @@ namespace SharpConfig
 
       if (reader == null)
       {
-        reader = new BinaryReader(stream);
+        reader = new BinaryReader(stream, Encoding.UTF8, leaveOpen: true);
       }
 
       var config = new Configuration();

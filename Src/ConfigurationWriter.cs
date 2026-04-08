@@ -2,29 +2,75 @@
 // https://sharpconfig.org
 
 using System;
-using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace SharpConfig
 {
   internal static class ConfigurationWriter
   {
-    // We need this, as we never want to close the stream the user has given us.
-    // But we also want to call the specified writer's Dispose() method.
-    // We wouldn't need this if we were targeting .NET 4+, because BinaryWriter
-    // gives us the option to leave the stream open after Dispose(), but not
-    // on .NET lower than 4.0.
-    // To circumvent this, we just define our own writer that does not close
-    // the underlying stream in Dispose().
-    private class NonClosingBinaryWriter : BinaryWriter
+    internal static string WriteToString(Configuration cfg)
     {
-      public NonClosingBinaryWriter(Stream stream) : base(stream)
+      using (var writer = new StringWriter())
       {
+        WriteToTextWriter(cfg, writer);
+        return writer.ToString();
+      }
+    }
+
+    internal static void WriteToTextWriter(Configuration cfg, TextWriter writer)
+    {
+      if (cfg == null)
+      {
+        throw new ArgumentNullException(nameof(cfg));
       }
 
-      protected override void Dispose(bool disposing)
+      if (writer == null)
       {
+        throw new ArgumentNullException(nameof(writer));
+      }
+
+      bool isFirstSection = true;
+
+      void WriteSection(Section section)
+      {
+        if (!isFirstSection)
+        {
+          writer.WriteLine();
+        }
+
+        if (!isFirstSection && section.PreComment != null)
+        {
+          writer.WriteLine();
+        }
+
+        if (section.Name != Section.DefaultSectionName)
+        {
+          writer.WriteLine(section.ToString());
+        }
+
+        foreach (var setting in section)
+        {
+          writer.WriteLine(setting.ToString());
+        }
+
+        if (section.Name != Section.DefaultSectionName || section.SettingCount > 0)
+        {
+          isFirstSection = false;
+        }
+      }
+
+      var defaultSection = cfg.DefaultSection;
+
+      if (defaultSection.SettingCount > 0)
+      {
+        WriteSection(defaultSection);
+      }
+
+      foreach (var section in cfg.Where(section => section != defaultSection))
+      {
+        WriteSection(section);
       }
     }
 
@@ -41,15 +87,11 @@ namespace SharpConfig
       }
 
       encoding ??= Encoding.UTF8;
-
-      string str = cfg.SaveToString();
-
-      // Encode & write the string.
-      var byteBuffer = new byte[encoding.GetByteCount(str)];
-      int byteCount = encoding.GetBytes(str, 0, str.Length, byteBuffer, 0);
-
-      stream.Write(byteBuffer, 0, byteCount);
-      stream.Flush();
+      using (var writer = new StreamWriter(stream, encoding, bufferSize: 1024, leaveOpen: true))
+      {
+        WriteToTextWriter(cfg, writer);
+        writer.Flush();
+      }
     }
 
     internal static void WriteToStreamBinary(Configuration cfg, Stream stream, BinaryWriter? writer)
@@ -66,7 +108,7 @@ namespace SharpConfig
 
       if (writer == null)
       {
-        writer = new NonClosingBinaryWriter(stream);
+        writer = new BinaryWriter(stream, Encoding.UTF8, leaveOpen: true);
       }
 
       writer.Write(cfg.SectionCount);
@@ -88,7 +130,7 @@ namespace SharpConfig
         }
       }
 
-      writer.Close();
+      writer.Flush();
     }
 
     private static void WriteCommentsBinary(BinaryWriter writer, ConfigurationElement element)
