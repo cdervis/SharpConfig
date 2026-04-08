@@ -66,7 +66,7 @@ namespace SharpConfig
           // If the first section has been found but settings already exist, add them to the default section.
           if (currentSection.Name == Section.DefaultSectionName && currentSection.SettingCount > 0)
           {
-            config._sections.Add(currentSection);
+            config.Add(currentSection);
           }
 
           currentSection = ParseSection(lineWithoutComment, lineNumber);
@@ -85,7 +85,7 @@ namespace SharpConfig
             preCommentBuilder.Clear();
           }
 
-          config._sections.Add(currentSection);
+          config.Add(currentSection);
         }
         else // Setting
         {

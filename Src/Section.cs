@@ -484,7 +484,9 @@ namespace SharpConfig
     /// If there are multiple settings with the same name, only the first setting is removed.
     /// To remove all settings that have the name name, use the RemoveAllNamed() method instead.
     /// </summary>
-    /// <param name="settingName">The case-sensitive name of the setting to remove.</param>
+    /// <param name="settingName">
+    /// The setting name. Matching is case-insensitive using ordinal comparison.
+    /// </param>
     /// <returns>True if a setting with the specified name was removed; false otherwise.</returns>
     ///
     /// <exception cref="ArgumentNullException">When <paramref name="settingName"/> is null or
@@ -518,7 +520,9 @@ namespace SharpConfig
     /// <summary>
     /// Removes all settings that have a specific name.
     /// </summary>
-    /// <param name="settingName">The case-sensitive name of the settings to remove.</param>
+    /// <param name="settingName">
+    /// The setting name. Matching is case-insensitive using ordinal comparison.
+    /// </param>
     ///
     /// <exception cref="ArgumentNullException">When <paramref name="settingName"/> is null or
     /// empty.</exception>
@@ -550,7 +554,9 @@ namespace SharpConfig
     /// <summary>
     /// Determines whether a specifically named setting is contained in the section.
     /// </summary>
-    /// <param name="settingName">The case-sensitive name of the setting.</param>
+    /// <param name="settingName">
+    /// The setting name. Matching is case-insensitive using ordinal comparison.
+    /// </param>
     /// <returns>True if the setting is contained in the section; false otherwise.</returns>
     ///
     /// <exception cref="ArgumentNullException">When <paramref name="settingName"/> is null or
@@ -601,11 +607,14 @@ namespace SharpConfig
     /// If you want to obtain all settings that have the same name, use the GetSettingsNamed() method instead.
     /// </summary>
     ///
-    /// <param name="name">The case-sensitive name of the setting.</param>
+    /// <param name="name">
+    /// The setting name. Matching is case-insensitive using ordinal comparison.
+    /// </param>
     ///
     /// <returns>
     /// The setting if found, otherwise a new setting with
     /// the specified name is created, added to the section and returned.
+    /// This is a create-or-get operation.
     /// </returns>
     public Setting this[string name]
     {
@@ -616,7 +625,7 @@ namespace SharpConfig
         if (setting == null)
         {
           setting = new Setting(name);
-          _settings.Add(setting);
+          Add(setting);
         }
 
         return setting;
@@ -626,21 +635,31 @@ namespace SharpConfig
     /// <summary>
     /// Gets all settings that have a specific name.
     /// </summary>
-    /// <param name="name">The case-sensitive name of the settings.</param>
+    /// <param name="name">The setting name to match.</param>
+    /// <param name="comparison">
+    /// The string comparison to use. The default is <see cref="StringComparison.OrdinalIgnoreCase"/>.
+    /// </param>
     /// <returns>
     /// The found settings.
     /// </returns>
-    public IEnumerable<Setting> GetSettingsNamed(string name)
+    public IEnumerable<Setting> GetSettingsNamed(
+        string name,
+        StringComparison comparison = StringComparison.OrdinalIgnoreCase)
     {
-      return _settings.Where(
-          setting => string.Equals(setting.Name, name, StringComparison.OrdinalIgnoreCase));
+      if (name == null)
+      {
+        return Enumerable.Empty<Setting>();
+      }
+
+      return _settings.Where(setting => string.Equals(setting.Name, name, comparison));
     }
 
     // Finds a setting by its name.
     private Setting? FindSetting(string name)
     {
-      return _settings.FirstOrDefault(
-          setting => string.Equals(setting.Name, name, StringComparison.OrdinalIgnoreCase));
+      return name == null ? null
+                          : _settings.FirstOrDefault(
+                              setting => string.Equals(setting.Name, name, StringComparison.OrdinalIgnoreCase));
     }
 
     private static TypeMappingMetadata GetTypeMappingMetadata(Type type)

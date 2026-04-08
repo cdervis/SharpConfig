@@ -113,7 +113,9 @@ namespace SharpConfig
     /// If there are multiple sections with the same name, only the first section is removed.
     /// To remove all sections that have the name name, use the RemoveAllNamed() method instead.
     /// </summary>
-    /// <param name="sectionName">The case-sensitive name of the section to remove.</param>
+    /// <param name="sectionName">
+    /// The section name. Matching is case-insensitive using ordinal comparison.
+    /// </param>
     /// <returns>True if a section with the specified name was removed; false otherwise.</returns>
     ///
     /// <exception cref="ArgumentNullException">When <paramref name="sectionName"/> is null or
@@ -139,7 +141,9 @@ namespace SharpConfig
     /// <summary>
     /// Removes all sections that have a specific name.
     /// </summary>
-    /// <param name="sectionName">The case-sensitive name of the sections to remove.</param>
+    /// <param name="sectionName">
+    /// The section name. Matching is case-insensitive using ordinal comparison.
+    /// </param>
     ///
     /// <exception cref="ArgumentNullException">When <paramref name="sectionName"/> is null or
     /// empty.</exception>
@@ -171,7 +175,9 @@ namespace SharpConfig
     /// <summary>
     /// Determines whether a specifically named section is contained in the configuration.
     /// </summary>
-    /// <param name="sectionName">The name of the section.</param>
+    /// <param name="sectionName">
+    /// The section name. Matching is case-insensitive using ordinal comparison.
+    /// </param>
     /// <returns>True if the section is contained in the configuration; false otherwise.</returns>
     ///
     /// <exception cref="ArgumentNullException">When <paramref name="sectionName"/> is null or
@@ -186,8 +192,12 @@ namespace SharpConfig
     /// Determines whether a specifically named section is contained in the configuration,
     /// and whether that section in turn contains a specifically named setting.
     /// </summary>
-    /// <param name="sectionName">The name of the section.</param>
-    /// <param name="settingName">The name of the setting.</param>
+    /// <param name="sectionName">
+    /// The section name. Matching is case-insensitive using ordinal comparison.
+    /// </param>
+    /// <param name="settingName">
+    /// The setting name. Matching is case-insensitive using ordinal comparison.
+    /// </param>
     /// <returns>True if the section and the respective setting was found; false otherwise.</returns>
     ///
     /// <exception cref="ArgumentNullException">When <paramref name="sectionName"/> or <paramref
@@ -333,6 +343,10 @@ namespace SharpConfig
     /// The loaded <see cref="Configuration"/> object.
     /// </returns>
     ///
+    /// <remarks>
+    /// This method does not dispose the provided <paramref name="stream"/>.
+    /// </remarks>
+    ///
     /// <exception cref="ArgumentNullException">When <paramref name="stream"/> is null.</exception>
     public static Configuration LoadFromStream(Stream stream, Encoding? encoding = null)
     {
@@ -405,6 +419,11 @@ namespace SharpConfig
     /// The loaded configuration.
     /// </returns>
     ///
+    /// <remarks>
+    /// This method does not dispose the provided <paramref name="stream"/>.
+    /// If <paramref name="reader"/> is supplied, it is also left open.
+    /// </remarks>
+    ///
     /// <exception cref="ArgumentNullException">When <paramref name="stream"/> is null.</exception>
     public static Configuration LoadFromBinaryStream(Stream stream, BinaryReader? reader = null)
     {
@@ -455,6 +474,10 @@ namespace SharpConfig
     /// <param name="stream">The stream to save the configuration to.</param>
     /// <param name="encoding">The character encoding to use. Specify null to use the default encoding, which
     /// is UTF8.</param>
+    ///
+    /// <remarks>
+    /// This method does not close or dispose the provided <paramref name="stream"/>.
+    /// </remarks>
     ///
     /// <exception cref="ArgumentNullException">When <paramref name="stream"/> is null.</exception>
     public void SaveToStream(Stream stream, Encoding? encoding)
@@ -508,6 +531,11 @@ namespace SharpConfig
     ///
     /// <param name="stream">The stream to save the configuration to.</param>
     /// <param name="writer">The writer to use. Specify null to use the default writer.</param>
+    ///
+    /// <remarks>
+    /// This method does not close or dispose the provided <paramref name="stream"/>.
+    /// If <paramref name="writer"/> is supplied, it is also left open.
+    /// </remarks>
     ///
     /// <exception cref="ArgumentNullException">When <paramref name="stream"/> is null.</exception>
     public void SaveToBinaryStream(Stream stream, BinaryWriter? writer)
@@ -662,11 +690,14 @@ namespace SharpConfig
     /// If you want to obtain all sections that have the same name, use the GetSectionsNamed() method instead.
     /// </summary>
     ///
-    /// <param name="name">The case-sensitive name of the section.</param>
+    /// <param name="name">
+    /// The section name. Matching is case-insensitive using ordinal comparison.
+    /// </param>
     ///
     /// <returns>
     /// The section if found, otherwise a new section with
     /// the specified name is created, added to the configuration and returned.
+    /// This is a create-or-get operation.
     /// </returns>
     public Section this[string name]
     {
@@ -692,23 +723,33 @@ namespace SharpConfig
     /// <summary>
     /// Gets all sections that have a specific name.
     /// </summary>
-    /// <param name="name">The case-sensitive name of the sections.</param>
+    /// <param name="name">The section name to match.</param>
+    /// <param name="comparison">
+    /// The string comparison to use. The default is <see cref="StringComparison.OrdinalIgnoreCase"/>.
+    /// </param>
     /// <returns>
     /// The found sections.
     /// Change from 3.2.9.1 to 3.3: Returns an <see cref="IEnumerable{T}"/> internally as of version 3.3.
     /// Previously returned a <see cref="List{T}"/>.
     /// </returns>
-    public IEnumerable<Section> GetSectionsNamed(string name)
+    public IEnumerable<Section> GetSectionsNamed(
+        string name,
+        StringComparison comparison = StringComparison.OrdinalIgnoreCase)
     {
-      return _sections.Where(
-          section => string.Equals(section.Name, name, StringComparison.OrdinalIgnoreCase));
+      if (name == null)
+      {
+        return Enumerable.Empty<Section>();
+      }
+
+      return _sections.Where(section => string.Equals(section.Name, name, comparison));
     }
 
     // Finds a section by its name.
     private Section? FindSection(string name)
     {
-      return _sections.FirstOrDefault(
-          section => string.Equals(section.Name, name, StringComparison.OrdinalIgnoreCase));
+      return name == null ? null
+                          : _sections.FirstOrDefault(
+                              section => string.Equals(section.Name, name, StringComparison.OrdinalIgnoreCase));
     }
   }
 }
