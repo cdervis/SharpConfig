@@ -62,7 +62,23 @@ var person = config["Person"].ToObject<Person>();
 // ...
 ```
 
+## Behavior Notes
+
+- `config["SectionName"]` and `section["SettingName"]` are create-or-get APIs. If the requested item does not exist, SharpConfig creates it and returns it.
+- `GetSectionsNamed()` and `GetSettingsNamed()` use `StringComparison.OrdinalIgnoreCase` by default to preserve existing behavior.
+
+```csharp
+var config = new Configuration();
+
+config["General"]["Value"].IntValue = 50;
+
+// Default behavior is case-insensitive.
+var matchingSections = config.GetSectionsNamed("general");
+
+// Use StringComparison.Ordinal for case-sensitive matching.
+var strictSections = config.GetSectionsNamed("General", StringComparison.Ordinal);
+```
+
 ## Documentation
 
 The full documentation is available on the [website](https://sharpconfig.org).
-
