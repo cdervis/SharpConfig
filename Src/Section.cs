@@ -19,8 +19,62 @@ namespace SharpConfig
     /// </summary>
     public const string DefaultSectionName = "$SharpConfigDefaultSection";
 
-    private readonly List<Setting> _settings;
+    private sealed class PropertyMappingMetadata
+    {
+      public PropertyMappingMetadata(PropertyInfo property)
+      {
+        Property = property;
+        CanRead = property.CanRead;
+        CanWrite = property.CanWrite;
+        Ignore = HasIgnoreAttribute(property) || HasIgnoreAttribute(property.PropertyType);
+        IsMultiline = HasMultilineAttribute(property);
+      }
 
+      public PropertyInfo Property { get; }
+      public bool CanRead { get; }
+      public bool CanWrite { get; }
+      public bool Ignore { get; }
+      public bool IsMultiline { get; }
+    }
+
+    private sealed class FieldMappingMetadata
+    {
+      public FieldMappingMetadata(FieldInfo field)
+      {
+        Field = field;
+        IsInitOnly = field.IsInitOnly;
+        Ignore = HasIgnoreAttribute(field) || HasIgnoreAttribute(field.FieldType);
+        IsMultiline = HasMultilineAttribute(field);
+      }
+
+      public FieldInfo Field { get; }
+      public bool IsInitOnly { get; }
+      public bool Ignore { get; }
+      public bool IsMultiline { get; }
+    }
+
+    private sealed class TypeMappingMetadata
+    {
+      public TypeMappingMetadata(Type type)
+      {
+        Properties = Array.ConvertAll(
+            type.GetProperties(BindingFlags.Instance | BindingFlags.Public),
+            property => new PropertyMappingMetadata(property));
+
+        Fields = Array.ConvertAll(
+            type.GetFields(BindingFlags.Instance | BindingFlags.Public),
+            field => new FieldMappingMetadata(field));
+      }
+
+      public PropertyMappingMetadata[] Properties { get; }
+      public FieldMappingMetadata[] Fields { get; }
+    }
+
+    private static readonly object s_mappingMetadataLock = new object();
+    
+    private static readonly Dictionary<Type, TypeMappingMetadata> s_mappingMetadata = new();
+
+    private readonly List<Setting> _settings;
     /// <summary>
     /// Initializes a new instance of the <see cref="Section"/> class.
     /// </summary>
@@ -62,18 +116,20 @@ namespace SharpConfig
       var section = new Section(name);
       var type = obj.GetType();
 
-      foreach (var prop in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
+      var metadata = GetTypeMappingMetadata(type);
+
+      foreach (var prop in metadata.Properties)
       {
-        if (!prop.CanRead || ShouldIgnoreMappingFor(prop))
+        if (!prop.CanRead || prop.Ignore)
         {
           // Skip this property, as it can't be read from.
           continue;
         }
 
-        object? value = prop.GetValue(obj, null);
-        var setting = new Setting(prop.Name);
+        object? value = prop.Property.GetValue(obj, null);
+        var setting = new Setting(prop.Property.Name);
 
-        if (prop.GetCustomAttributes(typeof(MultilineAttribute), false).Length > 0)
+        if (prop.IsMultiline)
         {
           setting.RawValue = $"[[\n{value}\n]]";
         }
@@ -82,22 +138,22 @@ namespace SharpConfig
           setting.SetValue(value);
         }
 
-        section._settings.Add(setting);
+        section.Add(setting);
       }
 
       // Repeat for each public field.
-      foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public))
+      foreach (var field in metadata.Fields)
       {
-        if (ShouldIgnoreMappingFor(field))
+        if (field.Ignore)
         {
           // Skip this field.
           continue;
         }
 
-        object? value = field.GetValue(obj);
-        var setting = new Setting(field.Name);
+        object? value = field.Field.GetValue(obj);
+        var setting = new Setting(field.Field.Name);
 
-        if (field.GetCustomAttributes(typeof(MultilineAttribute), false).Length > 0)
+        if (field.IsMultiline)
         {
           setting.RawValue = $"[[\n{value}\n]]";
         }
@@ -106,7 +162,7 @@ namespace SharpConfig
           setting.SetValue(value);
         }
 
-        section._settings.Add(setting);
+        section.Add(setting);
       }
 
       return section;
@@ -189,51 +245,42 @@ namespace SharpConfig
         throw new ArgumentNullException(nameof(obj));
       }
 
-      Type type = obj.GetType();
+      var metadata = GetTypeMappingMetadata(obj.GetType());
 
       // Scan the type's properties.
-      foreach (PropertyInfo prop in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
+      foreach (var prop in metadata.Properties)
       {
         if (!prop.CanRead)
         {
           continue;
         }
 
-        SetSettingValueFromMemberInfo(prop, obj);
+        SetSettingValueFromProperty(prop, obj);
       }
 
       // Scan the type's fields.
-      foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.Public))
+      foreach (var field in metadata.Fields)
       {
-        SetSettingValueFromMemberInfo(field, obj);
+        SetSettingValueFromField(field, obj);
       }
     }
 
-    private void SetSettingValueFromMemberInfo(MemberInfo info, object instance)
+    private void SetSettingValueFromProperty(PropertyMappingMetadata property, object instance)
     {
-      if (ShouldIgnoreMappingFor(info))
+      if (property.Ignore)
       {
         return;
       }
 
-      Setting? setting = FindSetting(info.Name);
+      Setting? setting = FindSetting(property.Property.Name);
       if (setting == null)
       {
         return;
       }
 
-      object? value = null;
+      object? value = property.Property.GetValue(instance, null);
 
-      switch (info)
-      {
-        case FieldInfo fieldInfo:
-          value = fieldInfo.GetValue(instance);
-          break;
-        case PropertyInfo propertyInfo:
-          value = propertyInfo.GetValue(instance, null);
-          break;
-      }
-      if (info.GetCustomAttributes(typeof(MultilineAttribute), false).Length > 0)
+      if (property.IsMultiline)
       {
         setting.RawValue = $"[[\n{value}\n]]";
       }
@@ -241,7 +288,31 @@ namespace SharpConfig
       {
         setting.SetValue(value);
       }
+    }
 
+    private void SetSettingValueFromField(FieldMappingMetadata field, object instance)
+    {
+      if (field.Ignore)
+      {
+        return;
+      }
+
+      Setting? setting = FindSetting(field.Field.Name);
+      if (setting == null)
+      {
+        return;
+      }
+
+      object? value = field.Field.GetValue(instance);
+
+      if (field.IsMultiline)
+      {
+        setting.RawValue = $"[[\n{value}\n]]";
+      }
+      else
+      {
+        setting.SetValue(value);
+      }
     }
 
     /// <summary>
@@ -260,31 +331,31 @@ namespace SharpConfig
         throw new ArgumentNullException(nameof(obj));
       }
 
-      var type = obj.GetType();
+      var metadata = GetTypeMappingMetadata(obj.GetType());
 
       // Scan the type's properties.
-      foreach (var prop in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
+      foreach (var prop in metadata.Properties)
       {
-        if (!prop.CanWrite || ShouldIgnoreMappingFor(prop))
+        if (!prop.CanWrite || prop.Ignore)
         {
           continue;
         }
 
-        var setting = FindSetting(prop.Name);
+        var setting = FindSetting(prop.Property.Name);
 
         if (setting == null)
         {
           continue;
         }
 
-        var propElementType = prop.PropertyType.GetElementType();
-        var value = prop.PropertyType.IsArray ? setting.GetValueArray(propElementType!)
-                                              : setting.GetValue(prop.PropertyType);
+        var propElementType = prop.Property.PropertyType.GetElementType();
+        var value = prop.Property.PropertyType.IsArray ? setting.GetValueArray(propElementType!)
+                                                       : setting.GetValue(prop.Property.PropertyType);
 
-        if (prop.PropertyType.IsArray)
+        if (prop.Property.PropertyType.IsArray)
         {
           var settingArray = value as Array;
-          var propArray = prop.GetValue(obj, null) as Array;
+          var propArray = prop.Property.GetValue(obj, null) as Array;
 
           if (settingArray != null && (propArray == null || propArray.Length != settingArray.Length))
           {
@@ -297,38 +368,38 @@ namespace SharpConfig
             propArray?.SetValue(settingArray.GetValue(i), i);
           }
 
-          prop.SetValue(obj, propArray, null);
+          prop.Property.SetValue(obj, propArray, null);
         }
         else
         {
-          prop.SetValue(obj, value, null);
+          prop.Property.SetValue(obj, value, null);
         }
       }
 
       // Scan the type's fields.
-      foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.Public))
+      foreach (var field in metadata.Fields)
       {
         // Skip readonly fields.
-        if (field.IsInitOnly || ShouldIgnoreMappingFor(field))
+        if (field.IsInitOnly || field.Ignore)
         {
           continue;
         }
 
-        var setting = FindSetting(field.Name);
+        var setting = FindSetting(field.Field.Name);
 
         if (setting == null)
         {
           continue;
         }
 
-        var fieldElementType = field.FieldType.GetElementType();
-        var value = field.FieldType.IsArray ? setting.GetValueArray(fieldElementType!)
-                                            : setting.GetValue(field.FieldType);
+        var fieldElementType = field.Field.FieldType.GetElementType();
+        var value = field.Field.FieldType.IsArray ? setting.GetValueArray(fieldElementType!)
+                                                  : setting.GetValue(field.Field.FieldType);
 
-        if (field.FieldType.IsArray)
+        if (field.Field.FieldType.IsArray)
         {
           var settingArray = value as Array;
-          var fieldArray = field.GetValue(obj) as Array;
+          var fieldArray = field.Field.GetValue(obj) as Array;
 
           if (settingArray != null && (fieldArray == null || fieldArray.Length != settingArray.Length))
           {
@@ -341,31 +412,12 @@ namespace SharpConfig
             fieldArray!.SetValue(settingArray.GetValue(i), i);
           }
 
-          field.SetValue(obj, fieldArray);
+          field.Field.SetValue(obj, fieldArray);
         }
         else
         {
-          field.SetValue(obj, value);
+          field.Field.SetValue(obj, value);
         }
-      }
-    }
-
-    // Determines whether a member should be ignored.
-    private static bool ShouldIgnoreMappingFor(MemberInfo member)
-    {
-      if (member.GetCustomAttributes(typeof(IgnoreAttribute), false).Length > 0)
-      {
-        return true;
-      }
-
-      switch (member)
-      {
-        case PropertyInfo propertyInfo:
-          return propertyInfo.PropertyType.GetCustomAttributes(typeof(IgnoreAttribute), false).Length > 0;
-        case FieldInfo fieldInfo:
-          return fieldInfo.FieldType.GetCustomAttributes(typeof(IgnoreAttribute), false).Length > 0;
-        default:
-          return false;
       }
     }
 
@@ -590,6 +642,29 @@ namespace SharpConfig
       return _settings.FirstOrDefault(
           setting => string.Equals(setting.Name, name, StringComparison.OrdinalIgnoreCase));
     }
+
+    private static TypeMappingMetadata GetTypeMappingMetadata(Type type)
+    {
+      lock (s_mappingMetadataLock)
+      {
+        if (!s_mappingMetadata.TryGetValue(type, out var metadata))
+        {
+          metadata = new TypeMappingMetadata(type);
+          s_mappingMetadata.Add(type, metadata);
+        }
+
+        return metadata;
+      }
+    }
+
+    private static bool HasIgnoreAttribute(MemberInfo member)
+      => member.GetCustomAttributes(typeof(IgnoreAttribute), false).Length > 0;
+
+    private static bool HasIgnoreAttribute(Type type)
+      => type.GetCustomAttributes(typeof(IgnoreAttribute), false).Length > 0;
+
+    private static bool HasMultilineAttribute(MemberInfo member)
+      => member.GetCustomAttributes(typeof(MultilineAttribute), false).Length > 0;
 
     /// <summary>
     /// Gets the element's expression as a string.
