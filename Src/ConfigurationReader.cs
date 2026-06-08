@@ -107,6 +107,14 @@ namespace SharpConfig
           currentSection.Add(setting);
         }
       }
+
+      // If the source contained settings but never opened a named section, the
+      // default section was never added above (that only happens when the first
+      // '[' is encountered). Commit it here so its settings aren't silently lost.
+      if (currentSection.Name == Section.DefaultSectionName && currentSection.SettingCount > 0)
+      {
+        config.Add(currentSection);
+      }
     }
 
     private static string? ParseComment(string line, out int commentCharIndex)
